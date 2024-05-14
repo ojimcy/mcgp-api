@@ -6,6 +6,8 @@ const userService = require('./user.service');
 const Token = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
+const securityService = require('./security.service');
+const { Otp } = require('../models');
 
 /**
  * Login with email and password
@@ -121,44 +123,59 @@ const refreshAuth = async (refreshToken) => {
   }
 };
 
+const forgotPassword = async (email) => {
+  try {
+    const userId = await userService.getUserByEmail(email);
+    const action = 'reset your password';
+    await securityService.sendOtp(userId, action);
+  } catch (error) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, error);
+  }
+};
+
 /**
  * Reset password
  * @param {string} resetPasswordToken
  * @param {string} newPassword
  * @returns {Promise}
  */
-const resetPassword = async (resetPasswordToken, newPassword) => {
+const resetPassword = async (otp, newPassword, confirmNewPassword) => {
   try {
-    const TokenModel = await Token();
-    const resetPasswordTokenDoc = await tokenService.verifyToken(resetPasswordToken, tokenTypes.RESET_PASSWORD);
-    const user = await userService.getUserById(resetPasswordTokenDoc.user);
+    const OtpModel = await Otp();
+    // Find the OTP document using the OTP
+    const otpDoc = await OtpModel.findOne({ otp });
+    if (!otpDoc) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Invalid OTP');
+    }
+
+    await securityService.validateOtp(otpDoc.userId, otp);
+    const user = await userService.getUserById(otpDoc.userId);
     if (!user) {
       throw new Error();
     }
+
+    // Check if the new password is confirmed
+    if (newPassword !== confirmNewPassword) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'New password and confirm password do not match');
+    }
+
     await userService.updateUserById(user.id, { password: newPassword });
-    await TokenModel.deleteMany({ user: user.id, type: tokenTypes.RESET_PASSWORD });
   } catch (error) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Password reset failed');
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Email verification failed');
   }
 };
 
 /**
  * Verify email
- * @param {string} verifyEmailToken
+ * @param {string} otp
  * @returns {Promise}
  */
-const verifyEmail = async (verifyEmailToken) => {
+const verifyEmail = async (userId, otp) => {
   try {
-    const TokenModel = await Token();
-    const verifyEmailTokenDoc = await tokenService.verifyToken(verifyEmailToken, tokenTypes.VERIFY_EMAIL);
-    const user = await userService.getUserById(verifyEmailTokenDoc.user);
-    if (!user) {
-      throw new Error();
-    }
-    await TokenModel.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
-    await userService.updateUserById(user.id, { isEmailVerified: true });
+    await securityService.validateOtp(userId, otp);
+    await userService.updateUserById(userId, { isEmailVerified: true });
   } catch (error) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Email verification failed');
+    throw new ApiError(httpStatus.UNAUTHORIZED, error);
   }
 };
 
@@ -167,6 +184,7 @@ module.exports = {
   loginUser,
   logout,
   refreshAuth,
+  forgotPassword,
   resetPassword,
   verifyEmail,
 };

@@ -3,7 +3,7 @@ const moment = require('moment');
 const httpStatus = require('http-status');
 const config = require('../config/config');
 const userService = require('./user.service');
-const { Token } = require('../models');
+const { Token, Otp } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
 
@@ -88,6 +88,27 @@ const generateAuthTokens = async (user) => {
 };
 
 /**
+ *
+ * @param {string} userId
+ * @returns {Promise<string>}
+ */
+const generateResetPasswordOtp = async (email) => {
+  const OtpModel = await Otp();
+
+  const userId = await userService.getUserByEmail(email);
+  // delete all otps for this user
+  await OtpModel.deleteMany({ userId });
+
+  // generate new otp
+  const otp = Math.floor(100000 + Math.random() * 900000);
+  const expiry = new Date();
+  expiry.setMinutes(expiry.getMinutes() + 15);
+  const otpDoc = await OtpModel.create({ userId, otp, expiry });
+
+  return otpDoc.otp;
+};
+
+/**
  * Generate reset password token
  * @param {string} email
  * @returns {Promise<string>}
@@ -122,4 +143,5 @@ module.exports = {
   generateAuthTokens,
   generateResetPasswordToken,
   generateVerifyEmailToken,
+  generateResetPasswordOtp,
 };

@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { authenticator } = require('otplib');
 const QRCode = require('qrcode');
 const httpStatus = require('http-status');
@@ -5,6 +6,18 @@ const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const { Otp, User } = require('../models');
 const { emailTemplates, sendEmail } = require('./email.service');
+
+/**
+ * Generates a random 6-digit number
+ * @returns {number} Random 6-digit number
+ */
+const generateRandomNumber = () => {
+  const min = 100000;
+  const max = 999999;
+  const randomBytes = crypto.randomBytes(2);
+  const randomNumber = randomBytes.readUInt16BE(0);
+  return min + Math.floor((randomNumber / 65535) * (max - min + 1));
+};
 
 /**
  *
@@ -18,28 +31,29 @@ const sendOtp = async (userId, action = 'complete your action') => {
   await OtpModel.deleteMany({ userId });
 
   // generate new otp
-  const otp = Math.floor(100000 + Math.random() * 900000);
+  const otp = generateRandomNumber();
   const expiry = new Date();
-  expiry.setMinutes(expiry.getMinutes() + 5);
+  expiry.setMinutes(expiry.getMinutes() + 15); // OTP expiry time
   const otpDoc = await OtpModel.create({ userId, otp, expiry });
   const user = await UserModel.findById(userId);
   await sendEmail(
-    { to: user.email, subject: 'Defipay OTP', template: emailTemplates.OTP },
-    { otp: otpDoc.otp, name: user.name, action }
+    { to: user.email, subject: 'MCGP OTP', template: emailTemplates.OTP },
+    { otp: otpDoc.otp, name: user.firstName, action }
   );
   return otpDoc.otp;
 };
 
 /**
- *
- * @param {string} userId
- * @param {string} otp
+ * Validate OTP
+ * @param {string} userId - User ID
+ * @param {string} otp - One-time password
  * @returns {Promise<void>}
- * @throws {ApiError}
+ * @throws {ApiError} If OTP is invalid or expired
  */
 const validateOtp = async (userId, otp) => {
   const OtpModel = await Otp();
-  const otpDoc = await OtpModel.findOne({ userId, otp, expiry: { $gt: new Date() } });
+  const otpDoc = await OtpModel.findOne({ userId, otp });
+
   if (!otpDoc) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid OTP');
   }
@@ -48,7 +62,12 @@ const validateOtp = async (userId, otp) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'OTP already used');
   }
 
+  if (otpDoc.expiry < new Date()) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'OTP has expired');
+  }
+
   otpDoc.isUsed = true;
+
   await otpDoc.save();
 };
 
