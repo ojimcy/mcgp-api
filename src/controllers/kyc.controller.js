@@ -23,7 +23,8 @@ const approveKycRequest = catchAsync(async (req, res) => {
 
 const rejectKycRequest = catchAsync(async (req, res) => {
   const { kycId } = req.params;
-  const result = await kycService.rejectKycRequest(kycId);
+  const { rejectionReasons } = req.body;
+  const result = await kycService.rejectKycRequest(kycId, rejectionReasons);
   res.status(httpStatus.OK).send(result);
 });
 
@@ -50,6 +51,14 @@ const viewMyKycRequest = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).json(kycRequest);
 });
 
+const updateKycRequest = catchAsync(async (req, res) => {
+  const { kycId } = req.params;
+  const { updatedKycData } = req.body;
+
+  const result = await kycService.updateKycRequest(kycId, updatedKycData);
+  res.status(httpStatus.OK).send(result);
+});
+
 module.exports = {
   createKycRequest,
   approveKycRequest,
@@ -58,4 +67,5 @@ module.exports = {
   viewPendingKycRequests,
   viewKycRequest,
   viewMyKycRequest,
+  updateKycRequest,
 };

@@ -50,10 +50,11 @@ const approveKycRequest = async (kycId) => {
 /**
  * Reject KYC request
  * @param {ObjectId} kycId - The ID of the KYC request to reject
+ * @param {string[]} rejectionReasons - Array of rejection reasons
  * @returns {Promise<Kyc>} The rejected KYC request
  * @throws {ApiError} If the KYC request with the specified ID is not found
  */
-const rejectKycRequest = async (kycId) => {
+const rejectKycRequest = async (kycId, rejectionReasons) => {
   const KycModel = await Kyc();
 
   const kyc = await KycModel.findById(kycId);
@@ -61,6 +62,7 @@ const rejectKycRequest = async (kycId) => {
     throw new ApiError(httpStatus.NOT_FOUND, `Request not found`);
   }
   kyc.status = 'rejected';
+  kyc.rejectionReasons = rejectionReasons;
   await kyc.save();
 
   return kyc;
@@ -128,6 +130,29 @@ const viewMyKycRequest = async (userId) => {
   return kycRequest;
 };
 
+/**
+ * Update KYC request
+ * @param {ObjectId} kycId - The ID of the KYC request to update
+ * @param {Object} updatedKycData - The updated KYC data
+ * @returns {Promise<Kyc>} The updated KYC request
+ * @throws {ApiError} If the KYC request with the specified ID is not found
+ */
+const updateKycRequest = async (kycId, updatedKycData) => {
+  const KycModel = await Kyc();
+
+  const kyc = await KycModel.findById(kycId);
+  if (!kyc) {
+    throw new ApiError(httpStatus.NOT_FOUND, `Request not found`);
+  }
+
+  // Update KYC document with new data
+  Object.assign(kyc, updatedKycData);
+
+  await kyc.save();
+
+  return kyc;
+};
+
 module.exports = {
   createKycRequest,
   approveKycRequest,
@@ -136,4 +161,5 @@ module.exports = {
   viewPendingKycRequests,
   viewKycRequest,
   viewMyKycRequest,
+  updateKycRequest,
 };

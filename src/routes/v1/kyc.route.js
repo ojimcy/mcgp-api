@@ -26,7 +26,7 @@ router
 router
   .route('/:kycId')
   .get(auth('viewKycRequest'), validate(kycValidation.viewKycRequest), kycController.viewKycRequest)
-  .patch(auth('editKycRequest'), validate(kycValidation.viewKycRequest), kycController.viewKycRequest);
+  .patch(auth('editKycRequest'), validate(kycValidation.updateKycRequest), kycController.updateKycRequest);
 
 router
   .route('/my-request')

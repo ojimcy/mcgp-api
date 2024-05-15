@@ -113,6 +113,10 @@ const kycSchema = mongoose.Schema(
       default: 'pending',
       required: true,
     },
+    rejectionReasons: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,

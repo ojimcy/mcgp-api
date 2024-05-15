@@ -3,7 +3,7 @@ const { toJSON } = require('./plugins');
 
 // create opt model with userId, otp, and expiry
 
-const optSchema = mongoose.Schema({
+const otpSchema = mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -21,6 +21,6 @@ const optSchema = mongoose.Schema({
 });
 
 // add plugin that converts mongoose to json
-optSchema.plugin(toJSON);
+otpSchema.plugin(toJSON);
 
-module.exports = optSchema;
+module.exports = otpSchema;

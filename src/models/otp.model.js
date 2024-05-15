@@ -1,18 +1,18 @@
 const { getConnection } = require('./connection');
-const optSchema = require('./otp.schema');
+const otpSchema = require('./otp.schema');
 
 let model = null;
 
 /**
- * @returns Opt
+ * @returns Otp
  */
-const Opt = async () => {
+const Otp = async () => {
   if (!model) {
     const conn = await getConnection();
-    model = conn.model('Opt', optSchema);
+    model = conn.model('Otp', otpSchema);
   }
 
   return model;
 };
 
-module.exports = Opt;
+module.exports = Otp;

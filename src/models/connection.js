@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const config = require('../config/config');
 const notificationSchema = require('./notification.schema');
-const optSchema = require('./otp.schema');
+const otpSchema = require('./otp.schema');
 const tokenSchema = require('./token.schema');
 const userSchema = require('./user.schema');
 const userRoleSchema = require('./userRole.schema');
@@ -32,7 +32,7 @@ const getConnection = async () => {
 
     // Schema registration
     conn.model('Notification', notificationSchema);
-    conn.model('Opt', optSchema);
+    conn.model('Otp', otpSchema);
     conn.model('Token', tokenSchema);
     conn.model('User', userSchema);
     conn.model('UserRoles', userRoleSchema);

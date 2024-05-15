@@ -29,9 +29,6 @@ const approveKycRequest = {
   params: Joi.object().keys({
     kycId: Joi.required().custom(objectId),
   }),
-  body: Joi.object().keys({
-    status: Joi.string(),
-  }),
 };
 
 const rejectKycRequest = {
@@ -39,7 +36,7 @@ const rejectKycRequest = {
     kycId: Joi.required().custom(objectId),
   }),
   body: Joi.object().keys({
-    status: Joi.string(),
+    rejectionReasons: Joi.array().items(Joi.string()).required(),
   }),
 };
 
@@ -64,6 +61,30 @@ const viewMyKycRequest = {
   }),
 };
 
+const updateKycRequest = {
+  body: Joi.object().keys({
+    firstName: Joi.string().optional(),
+    middleName: Joi.string().optional(),
+    lastName: Joi.string().optional(),
+    dob: Joi.string().optional(),
+    resCountry: Joi.string().optional(),
+    resState: Joi.string().optional(),
+    resCity: Joi.string().optional(),
+    resAddress: Joi.string().optional(),
+    resPostalCode: Joi.string().optional(),
+    country: Joi.string().optional(),
+    state: Joi.string().optional(),
+    city: Joi.string().optional(),
+    address: Joi.string().optional(),
+    selfiePhotoFile: Joi.string().optional(),
+    idPhotoFile: Joi.string().optional(),
+    idType: Joi.string().optional(),
+    idNumber: Joi.string().optional(),
+    issueDate: Joi.date().optional(),
+    expiryDate: Joi.date().optional(),
+  }),
+};
+
 module.exports = {
   createKycRequest,
   approveKycRequest,
@@ -71,4 +92,5 @@ module.exports = {
   viewKycRequests,
   viewKycRequest,
   viewMyKycRequest,
+  updateKycRequest,
 };
