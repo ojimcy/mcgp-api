@@ -6,6 +6,9 @@ const docsRoute = require('./docs.route');
 const securityRoute = require('./security.route');
 const notificationRoute = require('./notification.route');
 const kycRoute = require('./kyc.route');
+const categoryRoute = require('./category.route');
+const brandRoute = require('./brand.route');
+const collectionRoute = require('./collection.route');
 
 const router = express.Router();
 
@@ -29,6 +32,18 @@ const defaultRoutes = [
   {
     path: '/kyc',
     route: kycRoute,
+  },
+  {
+    path: '/category',
+    route: categoryRoute,
+  },
+  {
+    path: '/brands',
+    route: brandRoute,
+  },
+  {
+    path: '/collections',
+    route: collectionRoute,
   },
 ];
 

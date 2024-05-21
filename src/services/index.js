@@ -5,3 +5,6 @@ module.exports.userService = require('./user.service');
 module.exports.aclService = require('./acl.service');
 module.exports.securityService = require('./security.service');
 module.exports.kycService = require('./kyc.service');
+module.exports.categoryService = require('./category.service');
+module.exports.brandService = require('./brand.service');
+module.exports.collectionService = require('./collection.service');

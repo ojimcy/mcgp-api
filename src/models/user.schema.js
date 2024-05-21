@@ -112,7 +112,7 @@ userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
  * @returns {Promise<boolean>}
  */
 userSchema.statics.isPhoneNumberTaken = async function (phoneNumber, excludeUserId) {
-  const normalizedPhoneNumber = parsePhoneNumber(phoneNumber, 'NG').format('E.164');
+  const normalizedPhoneNumber = parsePhoneNumber(phoneNumber).format('E.164');
   const user = await this.findOne({ phoneNumber: normalizedPhoneNumber, _id: { $ne: excludeUserId } });
   return !!user;
 };

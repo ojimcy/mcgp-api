@@ -5,6 +5,9 @@ const otpSchema = require('./otp.schema');
 const tokenSchema = require('./token.schema');
 const userSchema = require('./user.schema');
 const userRoleSchema = require('./userRole.schema');
+const categorySchema = require('./category.schema');
+const brandSchema = require('./brand.schema');
+const productCollectionSchema = require('./collection.schema');
 
 let conn = null;
 
@@ -36,6 +39,9 @@ const getConnection = async () => {
     conn.model('Token', tokenSchema);
     conn.model('User', userSchema);
     conn.model('UserRoles', userRoleSchema);
+    conn.model('Category', categorySchema);
+    conn.model('Brand', brandSchema);
+    conn.model('Collection', productCollectionSchema);
   }
 
   return conn;

@@ -6,6 +6,9 @@ const userPermissions = [
   'updateProfile',
   'createKycRequest',
   'editKycRequest',
+  'viewCategories',
+  'viewBrands',
+  'viewCollections',
 ];
 
 const vendorPermissions = [...userPermissions, 'manageProduct'];
@@ -19,6 +22,9 @@ const adminPermissions = [
   'viewKycRequest',
   'getUsers',
   'manageUsers',
+  'manageCategories',
+  'manageBrands',
+  'manageCollections',
 ];
 
 const allRoles = {
