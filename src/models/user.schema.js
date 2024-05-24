@@ -84,6 +84,10 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isKycVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

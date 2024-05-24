@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { Kyc } = require('../models');
 const ApiError = require('../utils/ApiError');
+const { getUserById } = require('./user.service');
 
 /**
  * Create a KYC request
@@ -10,9 +11,14 @@ const ApiError = require('../utils/ApiError');
  */
 const createKycRequest = async (kycBody, userId) => {
   const KycModel = await Kyc();
+  const user = await getUserById(userId);
   // Validate KYC request body
   if (!kycBody || Object.keys(kycBody).length === 0) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'KYC request body cannot be empty');
+  }
+
+  if (!user || !user.isEmailVerified) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'Email not verified');
   }
 
   const kycRequest = {
@@ -35,14 +41,22 @@ const createKycRequest = async (kycBody, userId) => {
  */
 const approveKycRequest = async (kycId) => {
   const KycModel = await Kyc();
-
   const kyc = await KycModel.findById(kycId);
+
   if (!kyc) {
-    throw new ApiError(httpStatus.NOT_FOUND, `Request not found`);
+    throw new ApiError(httpStatus.NOT_FOUND, 'Request not found');
   }
 
   kyc.status = 'approved';
   await kyc.save();
+
+  const user = await getUserById(kyc.userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  user.isKycVerified = true;
+  await user.save();
 
   return kyc;
 };

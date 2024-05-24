@@ -9,6 +9,7 @@ const kycRoute = require('./kyc.route');
 const categoryRoute = require('./category.route');
 const brandRoute = require('./brand.route');
 const collectionRoute = require('./collection.route');
+const productRoute = require('./product.route');
 
 const router = express.Router();
 
@@ -44,6 +45,10 @@ const defaultRoutes = [
   {
     path: '/collections',
     route: collectionRoute,
+  },
+  {
+    path: '/products',
+    route: productRoute,
   },
 ];
 
