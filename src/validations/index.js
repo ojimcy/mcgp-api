@@ -5,3 +5,4 @@ module.exports.kycValidation = require('./kyc.validation');
 module.exports.categoryValidation = require('./category.validation');
 module.exports.brandValidation = require('./brand.validation');
 module.exports.collectionValidation = require('./collection.validation');
+module.exports.cartValidation = require('./cart.validation');

@@ -11,6 +11,7 @@ const userPermissions = [
   'viewCollections',
   'createProduct',
   'viewProducts',
+  'manageCart',
 ];
 
 const vendorPermissions = [...userPermissions, 'manageProduct'];
