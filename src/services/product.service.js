@@ -1,14 +1,16 @@
+/* eslint-disable no-param-reassign */
 const httpStatus = require('http-status');
 const { Product } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { getUserById } = require('./user.service');
+const { uploadImage, uploadImages } = require('./imageUpload.service');
 
 /**
  * Create a product
  * @param {Object} productBody
  * @returns {Promise<Product>}
  */
-const createProduct = async (productBody, createdBy) => {
+const createProduct = async (productBody, createdBy, files) => {
   const productModel = await Product();
   const user = await getUserById(createdBy);
 
@@ -16,10 +18,17 @@ const createProduct = async (productBody, createdBy) => {
     throw new ApiError(httpStatus.FORBIDDEN, 'Please complete KYC verification');
   }
 
-  // eslint-disable-next-line no-param-reassign
-  productBody.createdBy = createdBy;
+  const featuredImageUrl = files.featuredImage ? await uploadImage(files.featuredImage[0].path) : null;
+  const imageUrls = await uploadImages(files.images);
 
-  return productModel.create(productBody);
+  const productData = {
+    ...productBody,
+    featuredImage: featuredImageUrl,
+    images: imageUrls,
+    createdBy,
+  };
+
+  return productModel.create(productData);
 };
 
 /**
@@ -52,11 +61,22 @@ const getProduct = async (id) => {
  * @param {Object} updateBody
  * @returns {Promise<Product>}
  */
-const updateProduct = async (productId, updateBody) => {
+const updateProduct = async (productId, updateBody, files) => {
   const product = await getProduct(productId);
   if (!product) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
   }
+
+  if (files.featuredImage) {
+    const featuredImageUrl = await uploadImage(files.featuredImage[0].path);
+    updateBody.featuredImage = featuredImageUrl;
+  }
+
+  if (files.images && files.images.length > 0) {
+    const imageUrls = await uploadImages(files.images);
+    updateBody.images = imageUrls;
+  }
+
   Object.assign(product, updateBody);
   await product.save();
   return product;

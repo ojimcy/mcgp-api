@@ -5,7 +5,12 @@ const { productService } = require('../services');
 
 const createProduct = catchAsync(async (req, res) => {
   const createdBy = req.user._id;
-  const product = await productService.createProduct(req.body, createdBy);
+  const files = {
+    featuredImage: req.files.featuredImage,
+    images: req.files.images,
+  };
+
+  const product = await productService.createProduct(req.body, createdBy, files);
   res.status(httpStatus.CREATED).send(product);
 });
 
@@ -22,7 +27,11 @@ const getProducts = catchAsync(async (req, res) => {
 });
 
 const updateProduct = catchAsync(async (req, res) => {
-  const product = await productService.updateProduct(req.params.productId, req.body);
+  const { productId } = req.params;
+  const updateBody = req.body;
+  const { files } = req;
+
+  const product = await productService.updateProductWithImages(productId, updateBody, files);
   res.status(httpStatus.OK).send(product);
 });
 

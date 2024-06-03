@@ -97,4 +97,9 @@ module.exports = {
     clientSecret: envVars.RELOADLY_CLIENT_SECRET,
     topupsBaseUrl: envVars.RELOADLY_TOPUPS_BASE_URL,
   },
+  cloudinary: {
+    cloudName: envVars.CLOUDINARY_CLOUD_NAME,
+    apiKey: envVars.CLOUDINARY_API_KEY,
+    apiSecret: envVars.CLOUDINARY_API_SECRET,
+  },
 };
