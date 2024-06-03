@@ -3,24 +3,27 @@ const ApiError = require('../utils/ApiError');
 const { Cart } = require('../models');
 const { getProduct } = require('./product.service');
 
+// Helper function for parameter validation
+const validateCartParams = (userId, productId, quantity) => {
+  if (!userId || !productId || quantity == null) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'userId, productId, and quantity are required');
+  }
+  if (quantity <= 0) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Quantity must be a positive number');
+  }
+};
+
 /**
  * Add an item to the cart
  * @param {ObjectId} userId - The ID of the user whose cart is being modified
  * @param {ObjectId} productId - The ID of the product being added
- * @param {Object} quantity - quantity of the item being added to the cart
+ * @param {number} quantity - quantity of the item being added to the cart
  * @returns {Promise<Cart>} - The updated cart
  */
 const addToCart = async (userId, productId, quantity) => {
   const CartModel = await Cart();
 
-  // Check if userId and productId are provided
-  if (!userId || !productId || !quantity) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'userId, productId, and quantity are required');
-  }
-
-  if (quantity <= 0) {
-    throw new Error('Quantity must be a positive number');
-  }
+  validateCartParams(userId, productId, quantity);
 
   // Check if the product already exists in the user's cart
   const existingCartItem = await CartModel.findOne({ userId, productId });
@@ -48,7 +51,7 @@ const addToCart = async (userId, productId, quantity) => {
 /**
  * Get cart items for a user
  * @param {ObjectId} userId
- * @returns {Promise<Cart>}
+ * @returns {Promise<Cart[]>}
  */
 const getCartItems = async (userId) => {
   const CartModel = await Cart();
@@ -63,54 +66,37 @@ const getCartItems = async (userId) => {
  * @returns {Promise<void>}
  */
 const removeItemFromCart = async (userId, productId) => {
-  // Fetch Cart model
   const CartModel = await Cart();
-
-  // Find and remove the cart item
   await CartModel.deleteOne({ userId, productId });
 };
 
 /**
  * Clear cart
  * @param {ObjectId} userId - User ID
- * @returns {Promise<Cart>} - Updated cart
+ * @returns {Promise<void>}
  */
 const clearCart = async (userId) => {
-  // Fetch Cart model
-  const cartModel = await Cart();
-  // Find cart by userId
-  const cart = await cartModel.findOne({ userId });
-  // If cart doesn't exist, throw error
-  if (!cart) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Cart not found');
-  }
-
-  // Delete all documents in the cart
-  await cartModel.deleteMany({ userId });
+  const CartModel = await Cart();
+  await CartModel.deleteMany({ userId });
 };
 
 /**
  * Increase the quantity of an item in the cart
  * @param {ObjectId} userId - User ID
  * @param {ObjectId} productId - Product ID
- * @param {Object} quantity - quantity to increase by
+ * @param {number} quantity - quantity to increase by
  * @returns {Promise<Cart>} - Updated cart
  */
 const increaseQuantity = async (userId, productId, quantity) => {
   const CartModel = await Cart();
 
-  // Check if userId, productId, and quantity are provided
-  if (!userId || !productId || !quantity) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'userId, productId, and quantity are required');
-  }
+  validateCartParams(userId, productId, quantity);
 
-  // Find the cart item
   const cartItem = await CartModel.findOne({ userId, productId });
   if (!cartItem) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Cart item not found');
   }
 
-  // Increase the quantity
   cartItem.quantity += quantity;
   await cartItem.save();
 
@@ -121,27 +107,26 @@ const increaseQuantity = async (userId, productId, quantity) => {
  * Decrease the quantity of an item in the cart
  * @param {ObjectId} userId - User ID
  * @param {ObjectId} productId - Product ID
- * @param {Object} quantity - quantity to Decrease by
+ * @param {number} quantity - quantity to decrease by
  * @returns {Promise<Cart>} - Updated cart
  */
 const decreaseQuantity = async (userId, productId, quantity) => {
   const CartModel = await Cart();
 
-  // Check if userId, productId, and quantity are provided
-  if (!userId || !productId || !quantity) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'userId, productId, and quantity are required');
-  }
+  validateCartParams(userId, productId, quantity);
 
-  // Find the cart item
   const cartItem = await CartModel.findOne({ userId, productId });
   if (!cartItem) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Cart item not found');
   }
 
-  // Decrease the quantity
   cartItem.quantity -= quantity;
-  await cartItem.save();
+  if (cartItem.quantity <= 0) {
+    await CartModel.deleteOne({ userId, productId });
+    return null;
+  }
 
+  await cartItem.save();
   return cartItem;
 };
 

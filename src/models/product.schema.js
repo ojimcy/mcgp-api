@@ -1,32 +1,57 @@
 const mongoose = require('mongoose');
 const { toJSON, paginate } = require('./plugins');
 
-const productSchema = mongoose.Schema(
+const reviewSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    rating: {
+      type: Number,
+      min: 1,
+      max: 5,
+    },
+    reviewText: String,
+    date: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false }
+);
+
+const productSchema = new mongoose.Schema(
   {
     title: {
       type: String,
       required: true,
+      maxlength: 255,
     },
     description: {
       type: String,
       required: true,
+      maxlength: 2000,
     },
     featuredImage: {
       type: String,
       required: false,
+      default: '',
     },
     images: [{ type: String, required: true }],
     price: {
       type: Number,
       required: true,
+      min: 0,
     },
     salePrice: {
       type: Number,
       required: true,
+      min: 0,
     },
     stock: {
       type: Number,
-      required: false,
+      default: 0,
     },
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -58,27 +83,24 @@ const productSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
-    reviews: [
-      {
-        userId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'User',
-        },
-        rating: Number,
-        reviewText: String,
-        date: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
+    reviews: [reviewSchema],
     ratings: {
       type: Number,
+      min: 0,
+      max: 5,
     },
     attributes: [
       {
-        name: String,
-        values: [String],
+        name: {
+          type: String,
+          required: true,
+        },
+        values: [
+          {
+            type: String,
+            required: true,
+          },
+        ],
       },
     ],
     isFeatured: {
@@ -95,7 +117,13 @@ const productSchema = mongoose.Schema(
   }
 );
 
-// add plugin that converts mongoose to json
+// Add indexes for frequently queried fields
+productSchema.index({ categoryId: 1 });
+productSchema.index({ brand: 1 });
+productSchema.index({ status: 1 });
+productSchema.index({ isFeatured: 1 });
+
+// Add plugin that converts mongoose to json
 productSchema.plugin(toJSON);
 productSchema.plugin(paginate);
 

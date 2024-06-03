@@ -31,7 +31,7 @@ const updateProduct = catchAsync(async (req, res) => {
   const updateBody = req.body;
   const { files } = req;
 
-  const product = await productService.updateProductWithImages(productId, updateBody, files);
+  const product = await productService.updateProduct(productId, updateBody, files);
   res.status(httpStatus.OK).send(product);
 });
 

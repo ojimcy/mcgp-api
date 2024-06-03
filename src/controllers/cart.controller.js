@@ -15,30 +15,32 @@ const getCart = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).json(cart);
 });
 
-const removeItemFromCart = async (req, res) => {
+const removeItemFromCart = catchAsync(async (req, res) => {
   const userId = req.user._id;
   const { productId } = req.params;
-  const cart = await cartService.removeItemFromCart(userId, productId);
-  res.status(httpStatus.OK).send(cart);
-};
+  await cartService.removeItemFromCart(userId, productId);
+  res.status(httpStatus.OK).json({ message: 'Item removed from cart' });
+});
 
 const clearCart = catchAsync(async (req, res) => {
   const userId = req.user._id;
-  const cart = await cartService.clearCart(userId);
-  res.status(httpStatus.OK).send(cart);
+  await cartService.clearCart(userId);
+  res.status(httpStatus.OK).json({ message: 'Cart cleared' });
 });
 
 const increaseQuantity = catchAsync(async (req, res) => {
   const { productId } = req.params;
+  const { quantity } = req.body;
   const userId = req.user._id;
-  const cart = await cartService.increaseQuantity(userId, productId);
+  const cart = await cartService.increaseQuantity(userId, productId, quantity);
   res.status(httpStatus.OK).json(cart);
 });
 
 const decreaseQuantity = catchAsync(async (req, res) => {
   const { productId } = req.params;
+  const { quantity } = req.body;
   const userId = req.user._id;
-  const cart = await cartService.decreaseQuantity(userId, productId);
+  const cart = await cartService.decreaseQuantity(userId, productId, quantity);
   res.status(httpStatus.OK).json(cart);
 });
 
