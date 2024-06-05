@@ -1,22 +1,20 @@
 const mongoose = require('mongoose');
 const { toJSON, paginate } = require('./plugins');
+const orderItemSchema = require('./orderItem.schema');
 
-const orderSchema = mongoose.Schema(
+const orderSchema = new mongoose.Schema(
   {
-    items: [
-      {
-        productId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Product',
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          required: true,
-          default: 1,
-        },
-      },
-    ],
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    items: [orderItemSchema],
+    totalAmount: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
     status: {
       type: String,
       enum: ['pending', 'paid', 'shipped', 'delivered', 'canceled'],
@@ -25,37 +23,63 @@ const orderSchema = mongoose.Schema(
     deliveryAddress: {
       fullName: {
         type: String,
-        required: false,
+        required: true,
       },
       phoneNumber: {
         type: String,
-        required: false,
+        required: true,
       },
       address: {
         type: String,
-        required: false,
+        required: true,
       },
       city: {
         type: String,
-        required: false,
+        required: true,
       },
       state: {
         type: String,
-        required: false,
+        required: true,
       },
     },
     paymentMethod: {
       type: String,
-      enum: ['paypal', 'wallet'],
+      enum: ['bank_transfer', 'crypto'],
       required: true,
     },
-    createdBy: { type: String, required: true, ref: 'User' },
-    deliveredBy: { type: String, required: false, ref: 'User' },
-    shippingPrice: { type: Number, required: false },
-    isPaid: { type: Boolean, required: false, default: false },
-    isDelivered: { type: Boolean, required: false, default: false },
-    paidAt: { type: Date, required: false },
-    deliveredAt: { type: Date, required: false },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
+    },
+    deliveredBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    shippingPrice: {
+      type: Number,
+    },
+    isPaid: {
+      type: Boolean,
+      default: false,
+    },
+    isPaymentConfirmed: {
+      type: Boolean,
+      default: false,
+    },
+    isDelivered: {
+      type: Boolean,
+      default: false,
+    },
+    paidAt: {
+      type: Date,
+    },
+    deliveredAt: {
+      type: Date,
+    },
+    proofOfPayment: {
+      type: String,
+    },
   },
   {
     timestamps: true,
@@ -66,4 +90,4 @@ const orderSchema = mongoose.Schema(
 orderSchema.plugin(toJSON);
 orderSchema.plugin(paginate);
 
-module.exports = orderSchema;
+module.exports = mongoose.model('Order', orderSchema);

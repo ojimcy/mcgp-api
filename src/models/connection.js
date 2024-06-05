@@ -10,6 +10,7 @@ const brandSchema = require('./brand.schema');
 const productCollectionSchema = require('./collection.schema');
 const productSchema = require('./product.schema');
 const cartSchema = require('./cart.schema');
+const orderSchema = require('./order.schema');
 
 let conn = null;
 
@@ -46,6 +47,7 @@ const getConnection = async () => {
     conn.model('Collection', productCollectionSchema);
     conn.model('Product', productSchema);
     conn.model('Cart', cartSchema);
+    conn.model('Order', orderSchema);
   }
 
   return conn;

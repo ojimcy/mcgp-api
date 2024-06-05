@@ -102,6 +102,7 @@ const productSchema = new mongoose.Schema(
           },
         ],
       },
+      { _id: false },
     ],
     isFeatured: {
       type: Boolean,

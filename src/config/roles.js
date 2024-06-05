@@ -12,6 +12,8 @@ const userPermissions = [
   'createProduct',
   'viewProducts',
   'manageCart',
+  'createOrder',
+  'viewOrders',
 ];
 
 const vendorPermissions = [...userPermissions, 'manageProduct'];
@@ -29,6 +31,7 @@ const adminPermissions = [
   'manageBrands',
   'manageCollections',
   'manageProducts',
+  'viewAllOrders',
 ];
 
 const allRoles = {
