@@ -9,3 +9,4 @@ module.exports.Collection = require('./collection.model');
 module.exports.Product = require('./product.model');
 module.exports.Cart = require('./cart.model');
 module.exports.Order = require('./order.model');
+module.exports.Advert = require('./advert.model');

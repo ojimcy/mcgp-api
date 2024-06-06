@@ -11,3 +11,4 @@ module.exports.collectionService = require('./collection.service');
 module.exports.productService = require('./product.service');
 module.exports.cartService = require('./cart.service');
 module.exports.orderService = require('./order.service');
+module.exports.adService = require('./advert.service');

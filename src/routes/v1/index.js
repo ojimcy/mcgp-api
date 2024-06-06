@@ -12,6 +12,7 @@ const collectionRoute = require('./collection.route');
 const productRoute = require('./product.route');
 const cartRoute = require('./cart.route');
 const orderRoute = require('./order.route');
+const advertsRoute = require('./adverts.route');
 
 const router = express.Router();
 
@@ -59,6 +60,10 @@ const defaultRoutes = [
   {
     path: '/order',
     route: orderRoute,
+  },
+  {
+    path: '/adverts',
+    route: advertsRoute,
   },
 ];
 

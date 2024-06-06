@@ -18,10 +18,19 @@ const categorySchema = mongoose.Schema(
       ref: 'Category',
       require: false,
     },
-    featuredImage: {
+    image: {
       type: String,
       required: false,
       trim: true,
+    },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      sparse: true,
+      trim: true,
+      lowercase: true,
+      match: [/^[a-z0-9-]+$/, 'is invalid'],
     },
   },
   {
@@ -32,5 +41,16 @@ const categorySchema = mongoose.Schema(
 // Add plugin that converts mongoose documents to JSON
 categorySchema.plugin(toJSON);
 categorySchema.plugin(paginate);
+
+// Pre-save hook to generate slug if not provided
+categorySchema.pre('save', function (next) {
+  if (!this.slug) {
+    this.slug = this.title
+      .toLowerCase()
+      .replace(/ /g, '-')
+      .replace(/[^\w-]+/g, '');
+  }
+  next();
+});
 
 module.exports = categorySchema;
