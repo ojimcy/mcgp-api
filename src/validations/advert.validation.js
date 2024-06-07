@@ -29,29 +29,10 @@ const createAd = {
 };
 
 const updateAd = {
-  body: Joi.object().keys({
-    title: Joi.string(),
-    companyName: Joi.string(),
-    description: Joi.string(),
-    price: Joi.number().min(0),
-    salePrice: Joi.number().min(0).less(Joi.ref('price')),
-    type: Joi.string().valid('Product', 'Service'),
-    stock: Joi.number().min(0),
-    category: Joi.string().custom(objectId),
-    status: Joi.string().valid('Pending', 'Approved', 'Rejected'),
-    approvedBy: Joi.string().custom(objectId),
-    rejectedBy: Joi.string().custom(objectId),
-    reviews: Joi.array().items(Joi.object()),
-    ratings: Joi.number().min(0).max(5),
-    attributes: Joi.array().items(
-      Joi.object().keys({
-        name: Joi.string().required(),
-        values: Joi.array().items(Joi.string().required()),
-      })
-    ),
-    isFeatured: Joi.boolean(),
-    isSbAvailable: Joi.boolean(),
+  params: Joi.object().keys({
+    advertId: Joi.string().custom(objectId).required(),
   }),
+  body: Joi.object().min(1),
 };
 
 const getAds = {
@@ -68,13 +49,13 @@ const getAds = {
 
 const getAd = {
   params: Joi.object().keys({
-    adId: Joi.string().custom(objectId),
+    advertId: Joi.string().custom(objectId),
   }),
 };
 
 const deleteAd = {
   params: Joi.object().keys({
-    adId: Joi.string().custom(objectId),
+    advertId: Joi.string().custom(objectId),
   }),
 };
 

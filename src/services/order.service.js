@@ -1,157 +1,116 @@
+/* eslint-disable no-param-reassign */
 const httpStatus = require('http-status');
+const { Order, Advert } = require('../models');
 const ApiError = require('../utils/ApiError');
-const { Order, Product, Cart } = require('../models');
-const { uploadImage } = require('./imageUpload.service');
 
 /**
  * Create an order
- * @param {ObjectId} userId - The ID of the user creating the order
- * @param {Object} orderBody - The order details
+ * @param {Object} orderBody
+ * @param {ObjectId} buyerId
  * @returns {Promise<Order>}
  */
-const createOrder = async (userId, orderBody) => {
+const createOrder = async (orderBody, buyerId) => {
+  const AdvertModel = await Advert();
   const OrderModel = await Order();
-  const ProductModel = await Product();
-  const CartModel = await Cart();
-
-  const { paymentMethod, deliveryAddress } = orderBody;
-
-  // Fetch cart items for the user
-  const cartItems = await CartModel.find({ userId });
-  if (cartItems.length === 0) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Your cart is empty');
+  const advert = await AdvertModel.findById(orderBody.product);
+  if (!advert) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Advert not found');
   }
 
-  // Calculate total amount and validate product availability
-  const orderItems = await Promise.all(
-    cartItems.map(async (cartItem) => {
-      const product = await ProductModel.findById(cartItem.productId);
-      if (!product) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
-      }
-      if (product.stock < cartItem.quantity) {
-        throw new ApiError(httpStatus.BAD_REQUEST, 'Product out of stock');
-      }
-      const total = product.price * cartItem.quantity;
-      return {
-        productId: product._id,
-        title: product.title,
-        quantity: cartItem.quantity,
-        price: product.price,
-        total,
-      };
-    })
-  );
+  const orderData = {
+    ...orderBody,
+    buyer: buyerId,
+    seller: advert.createdBy,
+    amount: advert.price,
+  };
 
-  const totalAmount = orderItems.reduce((sum, item) => sum + item.total, 0);
+  if (advert.type === 'Service') {
+    orderData.serviceFee = 5;
+  }
 
-  const order = new OrderModel({
-    userId,
-    createdBy: userId,
-    items: orderItems,
-    totalAmount,
-    paymentMethod,
-    deliveryAddress: {
-      fullName: deliveryAddress.fullName,
-      phoneNumber: deliveryAddress.phoneNumber,
-      address: deliveryAddress.address,
-      state: deliveryAddress.state,
-      city: deliveryAddress.city,
-    },
-  });
-
-  await order.save();
-
-  // Update product stock
-  await Promise.all(
-    cartItems.map((cartItem) => ProductModel.updateOne({ _id: cartItem.productId }, { $inc: { stock: -cartItem.quantity } }))
-  );
-
-  // Clear user's cart
-  await CartModel.deleteMany({ userId });
-
+  const order = await OrderModel.create(orderData);
   return order;
 };
 
 /**
- * Get orders by user ID
- * @param {ObjectId} userId
- * @returns {Promise<Order[]>}
+ * Get order by id
+ * @param {ObjectId} id
+ * @returns {Promise<Order>}
  */
-const getOrdersByUserId = async (userId) => {
+const getOrderById = async (id) => {
   const OrderModel = await Order();
-  return OrderModel.find({ userId });
+  return OrderModel.findById(id).populate('product buyer seller');
 };
 
 /**
- * Query for users
+ * Query for orders
  * @param {Object} filter - Mongo filter
  * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
  */
-const getOrders = async (filter, options) => {
+const queryOrders = async (filter, options) => {
   const OrderModel = await Order();
   const orders = await OrderModel.paginate(filter, options);
   return orders;
 };
 
-const getOrderById = async (orderId) => {
-  const OrderModel = await Order();
-  const order = await OrderModel.findById(orderId);
-  return order;
-};
-
 /**
- * Upload proof of payment
+ * Acknowledge payment
  * @param {ObjectId} orderId
- * @param {String} proofOfPaymentUrl
  * @returns {Promise<Order>}
  */
-const uploadProofOfPayment = async (orderId, proofOfPaymentUrl) => {
+const acknowledgePayment = async (orderId) => {
   const order = await getOrderById(orderId);
   if (!order) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Order not found');
   }
-
-  const proofOfPayment = await uploadImage(proofOfPaymentUrl);
-
-  order.proofOfPayment = proofOfPayment;
-  order.status = 'paid';
-  order.isPaid = true;
-  order.paidAt = new Date();
-
+  order.status = 'Paid';
   await order.save();
   return order;
 };
 
 /**
- * Confirm payment by seller
+ * Release product
  * @param {ObjectId} orderId
+ * @param {ObjectId} sellerId
  * @returns {Promise<Order>}
  */
-const confirmPaymentBySeller = async (orderId) => {
+const releaseProduct = async (orderId, sellerId) => {
   const order = await getOrderById(orderId);
   if (!order) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Order not found');
   }
-
-  if (order.status !== 'paid') {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Order is not marked as paid');
+  if (order.seller.toString() !== sellerId.toString()) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'You are not authorized to release this product');
   }
+  order.status = 'Released';
+  await order.save();
+  return order;
+};
 
-  order.isPaymentConfirmed = true;
-
+/**
+ * Complete order
+ * @param {ObjectId} orderId
+ * @returns {Promise<Order>}
+ */
+const completeOrder = async (orderId) => {
+  const order = await getOrderById(orderId);
+  if (!order) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Order not found');
+  }
+  if (order.status !== 'Released') {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Order must be released before it can be completed');
+  }
+  order.status = 'Completed';
   await order.save();
   return order;
 };
 
 module.exports = {
   createOrder,
-  getOrdersByUserId,
-  getOrders,
-  uploadProofOfPayment,
-  confirmPaymentBySeller,
+  getOrderById,
+  queryOrders,
+  acknowledgePayment,
+  releaseProduct,
+  completeOrder,
 };

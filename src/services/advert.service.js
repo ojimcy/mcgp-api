@@ -22,7 +22,7 @@ const createAd = async (adBody, createdBy, files) => {
   const imageUrls = await uploadImages(files.images);
 
   const adData = {
-    ...createdBy,
+    ...adBody,
     featuredImage: featuredImageUrl,
     images: imageUrls,
     createdBy,
@@ -58,12 +58,20 @@ const getAdById = async (id) => {
  * Update ad by id
  * @param {ObjectId} advertId
  * @param {Object} updateBody
+ * @param {Object} files
+ * @param {Object} user
  * @returns {Promise<Advert>}
  */
-const updateAdById = async (advertId, updateBody, files) => {
+const updateAdById = async (advertId, updateBody, files, userId) => {
   const ad = await getAdById(advertId);
   if (!ad) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Advert not found');
+  }
+
+  // Check if the user is the creator of the ad or an admin
+  const user = await getUserById(userId);
+  if (ad.createdBy.toString() !== user._id.toString() && user.role !== 'admin') {
+    throw new ApiError(httpStatus.FORBIDDEN, 'You are not authorized to update this ad');
   }
 
   if (files.featuredImage) {
@@ -80,17 +88,22 @@ const updateAdById = async (advertId, updateBody, files) => {
   await ad.save();
   return ad;
 };
-
 /**
  * Delete ad by id
  * @param {ObjectId} advertId
  * @returns {Promise<Advert>}
  */
-const deleteAdById = async (advertId) => {
+const deleteAdById = async (advertId, userId) => {
   const ad = await getAdById(advertId);
   if (!ad) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Advert not found');
   }
+
+  const user = await getUserById(userId);
+  if (ad.createdBy.toString() !== user._id.toString() && user.role !== 'admin') {
+    throw new ApiError(httpStatus.FORBIDDEN, 'You are not authorized to delete this ad');
+  }
+
   await ad.remove();
   return ad;
 };

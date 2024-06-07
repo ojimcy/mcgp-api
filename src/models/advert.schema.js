@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 const { toJSON, paginate } = require('./plugins');
 const reviewSchema = require('./review.schema');
 
 const advertSchema = mongoose.Schema(
   {
-    title: {
+    name: {
       type: String,
       required: true,
       trim: true,
@@ -27,6 +28,27 @@ const advertSchema = mongoose.Schema(
     negotiable: {
       type: Boolean,
       default: false,
+    },
+    email: {
+      type: String,
+      required: false,
+      trim: true,
+      lowercase: true,
+      validate(value) {
+        if (value && !validator.isEmail(value)) {
+          throw new Error('Invalid email');
+        }
+      },
+    },
+    phoneNumber: {
+      type: String,
+      required: false,
+      trim: true,
+      minlength: 4,
+    },
+    location: {
+      type: String,
+      required: true,
     },
     type: {
       type: String,
@@ -96,7 +118,7 @@ const advertSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    isSbAvailable: {
+    isAvailable: {
       type: Boolean,
       default: true,
     },
@@ -110,4 +132,4 @@ const advertSchema = mongoose.Schema(
 advertSchema.plugin(toJSON);
 advertSchema.plugin(paginate);
 
-module.exports = mongoose.model('Advert', advertSchema);
+module.exports = advertSchema;

@@ -14,12 +14,13 @@ const userPermissions = [
   'manageCart',
   'createOrder',
   'viewOrders',
+  'createAdvert',
+  'viewAdverts',
+  'order',
 ];
 
-const vendorPermissions = [...userPermissions, 'manageProduct'];
-
 const adminPermissions = [
-  ...vendorPermissions,
+  ...userPermissions,
   'viewKycRequests',
   'viewPendingKycRequests',
   'approveKycRequest',
@@ -32,11 +33,12 @@ const adminPermissions = [
   'manageCollections',
   'manageProducts',
   'viewAllOrders',
+  'manageAdverts',
+  'manageOrder',
 ];
 
 const allRoles = {
   user: userPermissions,
-  vendor: vendorPermissions,
   admin: adminPermissions,
 };
 

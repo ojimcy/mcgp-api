@@ -22,31 +22,33 @@ const getAds = catchAsync(async (req, res) => {
 });
 
 const getAd = catchAsync(async (req, res) => {
-  const ad = await adService.getAdById(req.params.adId);
+  const ad = await adService.getAdById(req.params.advertId);
   res.status(httpStatus.OK).json(ad);
 });
 
 const updateAd = catchAsync(async (req, res) => {
-  const { adId } = req.params;
+  const { advertId } = req.params;
   const updateBody = req.body;
   const { files } = req;
 
-  const ad = await adService.updateAdById(adId, updateBody, files);
+  const ad = await adService.updateAdById(advertId, updateBody, files);
   res.status(httpStatus.OK).json(ad);
 });
 
 const deleteAd = catchAsync(async (req, res) => {
-  await adService.deleteAdById(req.params.adId);
+  await adService.deleteAdById(req.params.advertId);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
 const approveAd = catchAsync(async (req, res) => {
-  const ad = await adService.approveAd(req.params.adId, req.user.id);
+  const userId = req.user._id;
+  const ad = await adService.approveAd(req.params.advertId, userId);
   res.json(ad);
 });
 
 const rejectAd = catchAsync(async (req, res) => {
-  const ad = await adService.rejectAd(req.params.adId, req.body.rejectionReasons, req.user.id);
+  const userId = req.user._id;
+  const ad = await adService.rejectAd(req.params.advertId, req.body.rejectionReasons, userId);
   res.json(ad);
 });
 

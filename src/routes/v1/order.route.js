@@ -6,11 +6,8 @@ const auth = require('../../middlewares/auth');
 
 const router = express.Router();
 
-router
-  .route('/')
-  .post(auth('createOrder'), validate(orderValidation.createOrder), orderController.createOrder)
-  .get(auth('viewOrders'), orderController.getOrdersByUserId);
+router.route('/').post(auth('order'), validate(orderValidation.createOrder), orderController.createOrder);
 
-router.route('/get-all').get(auth('viewAllOrders'), validate(orderValidation.getOrders), orderController.getOrders);
+router.route('/:orderId').get(auth('viewAdverts'), validate(orderValidation.getOrder), orderController.getOrder);
 
 module.exports = router;

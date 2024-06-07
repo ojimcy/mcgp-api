@@ -1,24 +1,48 @@
 const mongoose = require('mongoose');
 const { toJSON, paginate } = require('./plugins');
-const orderItemSchema = require('./orderItem.schema');
 
 const orderSchema = new mongoose.Schema(
   {
-    userId: {
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Advert',
+      required: true,
+    },
+    buyer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    items: [orderItemSchema],
-    totalAmount: {
-      type: Number,
+    seller: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
-      min: 0,
     },
     status: {
       type: String,
-      enum: ['pending', 'paid', 'shipped', 'delivered', 'canceled'],
-      default: 'pending',
+      enum: ['Pending', 'Paid', 'Acknowledged', 'Released', 'Completed'],
+      default: 'Pending',
+    },
+    paymentProof: {
+      type: String,
+      required: false,
+    },
+    paymentMethod: {
+      type: String,
+      required: true,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['Pending', 'Completed', 'Failed'],
+      default: 'Pending',
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    serviceFee: {
+      type: Number,
+      required: false,
     },
     deliveryAddress: {
       fullName: {
@@ -42,16 +66,6 @@ const orderSchema = new mongoose.Schema(
         required: true,
       },
     },
-    paymentMethod: {
-      type: String,
-      enum: ['bank_transfer', 'crypto'],
-      required: true,
-    },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: 'User',
-    },
     deliveredBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -60,10 +74,6 @@ const orderSchema = new mongoose.Schema(
       type: Number,
     },
     isPaid: {
-      type: Boolean,
-      default: false,
-    },
-    isPaymentConfirmed: {
       type: Boolean,
       default: false,
     },
@@ -90,4 +100,4 @@ const orderSchema = new mongoose.Schema(
 orderSchema.plugin(toJSON);
 orderSchema.plugin(paginate);
 
-module.exports = mongoose.model('Order', orderSchema);
+module.exports = orderSchema;
