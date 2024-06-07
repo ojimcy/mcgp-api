@@ -6,8 +6,7 @@ const createUser = {
     email: Joi.string().optional().email(),
     phoneNumber: Joi.string().optional(),
     password: Joi.string().required().custom(password),
-    firstName: Joi.string().required(),
-    lastName: Joi.string().required(),
+    name: Joi.string().required(),
     country: Joi.string().required(),
     role: Joi.string(),
   }),
@@ -37,8 +36,7 @@ const updateUser = {
     .keys({
       email: Joi.string().optional().email(),
       password: Joi.string().optional().custom(password),
-      firstName: Joi.string().optional(),
-      lastName: Joi.string().optional(),
+      name: Joi.string().optional(),
       country: Joi.string().optional(),
       role: Joi.string().optional(),
       phoneNumber: Joi.string().optional(),
@@ -61,8 +59,7 @@ const getMyProfile = {
 const updateProfile = {
   body: Joi.object().keys({
     email: Joi.string().optional().email(),
-    firstName: Joi.string().optional(),
-    lastName: Joi.string().optional(),
+    name: Joi.string().optional(),
     country: Joi.string().optional(),
     phoneNumber: Joi.string().optional(),
   }),

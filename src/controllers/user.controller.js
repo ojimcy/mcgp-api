@@ -36,11 +36,10 @@ const deleteUser = catchAsync(async (req, res) => {
 
 const updateProfile = catchAsync(async (req, res) => {
   const userId = req.user._id;
-  const { email, firstName, lastName, country, phoneNumber } = req.body;
+  const { email, name, country, phoneNumber } = req.body;
   const updateData = {
     email,
-    firstName,
-    lastName,
+    name,
     country,
     phoneNumber,
   };

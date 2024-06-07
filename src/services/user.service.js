@@ -142,11 +142,8 @@ const updateProfile = async (userId, updateData) => {
     }
     user.email = updateData.email;
   }
-  if (updateData.firstName) {
-    user.firstName = updateData.firstName;
-  }
-  if (updateData.lastName) {
-    user.lastName = updateData.lastName;
+  if (updateData.name) {
+    user.name = updateData.name;
   }
   if (updateData.country) {
     user.country = updateData.country;
