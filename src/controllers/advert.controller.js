@@ -29,7 +29,10 @@ const getAd = catchAsync(async (req, res) => {
 const updateAd = catchAsync(async (req, res) => {
   const { advertId } = req.params;
   const updateBody = req.body;
-  const { files } = req;
+  const files = {
+    featuredImage: req.files && req.files.featuredImage ? req.files.featuredImage : [],
+    images: req.files && req.files.images ? req.files.images : [],
+  };
   const userId = req.user._id;
 
   const ad = await adService.updateAdById(advertId, updateBody, files, userId);

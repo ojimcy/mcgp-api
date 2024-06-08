@@ -17,10 +17,8 @@ const createAd = async (adBody, createdBy, files) => {
   if (!user.isKycVerified) {
     throw new ApiError(httpStatus.FORBIDDEN, 'Please complete KYC verification');
   }
-
   const featuredImageUrl = files.featuredImage ? await uploadImage(files.featuredImage[0].path) : null;
   const imageUrls = await uploadImages(files.images);
-
   const adData = {
     ...adBody,
     featuredImage: featuredImageUrl,
@@ -74,12 +72,12 @@ const updateAdById = async (advertId, updateBody, files, userId) => {
     throw new ApiError(httpStatus.FORBIDDEN, 'You are not authorized to update this ad');
   }
 
-  if (files.featuredImage) {
+  if (files && files.featuredImage && files.featuredImage.length > 0) {
     const featuredImageUrl = await uploadImage(files.featuredImage[0].path);
     updateBody.featuredImage = featuredImageUrl;
   }
 
-  if (files.images && files.images.length > 0) {
+  if (files && files.images && files.images.length > 0) {
     const imageUrls = await uploadImages(files.images);
     updateBody.images = imageUrls;
   }

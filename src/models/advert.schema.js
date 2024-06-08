@@ -52,7 +52,6 @@ const advertSchema = mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['Product', 'Service'],
       required: true,
     },
     stock: {
