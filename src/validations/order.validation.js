@@ -23,19 +23,32 @@ const getOrder = {
   }),
 };
 
+const getOrders = {
+  query: Joi.object().keys({
+    type: Joi.string(),
+    status: Joi.string(),
+    sortBy: Joi.string(),
+    limit: Joi.number().integer(),
+    page: Joi.number().integer(),
+  }),
+};
+
 const payForOrder = {
   params: Joi.object().keys({
     orderId: Joi.string().custom(objectId).required(),
   }),
   body: Joi.object().keys({
     amount: Joi.number().required(),
-    method: Joi.string().required(),
+    method: Joi.string().valid('Bank Transfer', 'Crypto Wallet').required(),
   }),
 };
 
 const acknowledgePayment = {
   params: Joi.object().keys({
     orderId: Joi.string().custom(objectId).required(),
+  }),
+  body: Joi.object().keys({
+    isPaymentRecieved: Joi.boolean().required(),
   }),
 };
 
@@ -58,4 +71,5 @@ module.exports = {
   acknowledgePayment,
   releaseProduct,
   completeOrder,
+  getOrders,
 };

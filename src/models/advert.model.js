@@ -10,7 +10,7 @@ let model = null;
 const Advert = async () => {
   if (!model) {
     const conn = await getConnection();
-    model = conn.model('Ad', advertSchema);
+    model = conn.model('Advert', advertSchema);
   }
 
   return model;

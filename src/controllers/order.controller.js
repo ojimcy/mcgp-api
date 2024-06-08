@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { orderService, paymentService } = require('../services');
+const pick = require('../utils/pick');
 
 const createOrder = catchAsync(async (req, res) => {
   const buyerId = req.user._id;
@@ -13,13 +14,20 @@ const getOrder = catchAsync(async (req, res) => {
   res.json(order);
 });
 
+const getOrders = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['type', 'status']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const ads = await orderService.queryOrders(filter, options);
+  res.status(httpStatus.OK).json(ads);
+});
+
 const payForOrder = catchAsync(async (req, res) => {
-  const payment = await paymentService.processPayment(req.params.orderId, req.body, req.files);
+  const payment = await paymentService.payForOrder(req.params.orderId, req.body, req.files);
   res.status(httpStatus.OK).json(payment);
 });
 
 const acknowledgePayment = catchAsync(async (req, res) => {
-  const order = await orderService.acknowledgePayment(req.params.orderId);
+  const order = await orderService.acknowledgePayment(req.params.orderId, req.body);
   res.status(httpStatus.OK).json(order);
 });
 
@@ -36,6 +44,7 @@ const completeOrder = catchAsync(async (req, res) => {
 module.exports = {
   createOrder,
   getOrder,
+  getOrders,
   payForOrder,
   acknowledgePayment,
   releaseProduct,

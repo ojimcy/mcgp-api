@@ -8,10 +8,10 @@ const userRoleSchema = require('./userRole.schema');
 const categorySchema = require('./category.schema');
 const brandSchema = require('./brand.schema');
 const productCollectionSchema = require('./collection.schema');
-const productSchema = require('./product.schema');
 const cartSchema = require('./cart.schema');
 const orderSchema = require('./order.schema');
 const advertSchema = require('./advert.schema');
+const paymentSchema = require('./payment.schema');
 
 let conn = null;
 
@@ -46,10 +46,10 @@ const getConnection = async () => {
     conn.model('Category', categorySchema);
     conn.model('Brand', brandSchema);
     conn.model('Collection', productCollectionSchema);
-    conn.model('Product', productSchema);
     conn.model('Cart', cartSchema);
     conn.model('Order', orderSchema);
     conn.model('Advert', advertSchema);
+    conn.model('Payment', paymentSchema);
   }
 
   return conn;

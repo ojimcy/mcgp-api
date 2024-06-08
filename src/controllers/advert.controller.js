@@ -30,8 +30,9 @@ const updateAd = catchAsync(async (req, res) => {
   const { advertId } = req.params;
   const updateBody = req.body;
   const { files } = req;
+  const userId = req.user._id;
 
-  const ad = await adService.updateAdById(advertId, updateBody, files);
+  const ad = await adService.updateAdById(advertId, updateBody, files, userId);
   res.status(httpStatus.OK).json(ad);
 });
 

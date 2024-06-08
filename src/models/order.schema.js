@@ -20,7 +20,7 @@ const orderSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['Pending', 'Paid', 'Acknowledged', 'Released', 'Completed'],
+      enum: ['Pending', 'Paid', 'Released', 'Completed'],
       default: 'Pending',
     },
     paymentProof: {
@@ -30,6 +30,7 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
       required: true,
+      enum: ['bank_transfer', 'crypto'],
     },
     paymentStatus: {
       type: String,

@@ -18,12 +18,30 @@ const paymentSchema = mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['Pending', 'Completed', 'Failed'],
+      enum: ['Pending', 'Recieved', 'Failed'],
       default: 'Pending',
     },
     proof: {
       type: String,
       required: false,
+    },
+    accountDetails: {
+      accountName: {
+        type: String,
+        required: false,
+      },
+      accountNumber: {
+        type: String,
+        required: false,
+      },
+      bankName: {
+        type: String,
+        required: false,
+      },
+      walletAddress: {
+        type: String,
+        required: false,
+      },
     },
   },
   {

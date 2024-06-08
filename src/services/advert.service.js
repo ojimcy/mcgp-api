@@ -88,6 +88,7 @@ const updateAdById = async (advertId, updateBody, files, userId) => {
   await ad.save();
   return ad;
 };
+
 /**
  * Delete ad by id
  * @param {ObjectId} advertId

@@ -2,6 +2,7 @@
 const httpStatus = require('http-status');
 const { Order, Advert } = require('../models');
 const ApiError = require('../utils/ApiError');
+const SYSTEM_CONFIG = require('../constants/systemConfig');
 
 /**
  * Create an order
@@ -25,7 +26,7 @@ const createOrder = async (orderBody, buyerId) => {
   };
 
   if (advert.type === 'Service') {
-    orderData.serviceFee = 5;
+    orderData.serviceFee = SYSTEM_CONFIG.SYSTEM_FEE;
   }
 
   const order = await OrderModel.create(orderData);
@@ -57,14 +58,16 @@ const queryOrders = async (filter, options) => {
 /**
  * Acknowledge payment
  * @param {ObjectId} orderId
+ * @param {boolean} isPaymentReceived
  * @returns {Promise<Order>}
  */
-const acknowledgePayment = async (orderId) => {
+const acknowledgePayment = async (orderId, isPaymentReceived) => {
   const order = await getOrderById(orderId);
   if (!order) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Order not found');
   }
-  order.status = 'Paid';
+
+  order.paymentStatus = isPaymentReceived ? 'Completed' : 'Failed';
   await order.save();
   return order;
 };

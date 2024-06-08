@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const { Cart } = require('../models');
-const { getProduct } = require('./product.service');
+const { getProduct } = require('./advert.service');
 
 // Helper function for parameter validation
 const validateCartParams = (userId, productId, quantity) => {
