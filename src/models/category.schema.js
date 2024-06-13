@@ -13,6 +13,10 @@ const categorySchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    type: {
+      type: String,
+      required: true,
+    },
     parentCategory: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
@@ -21,7 +25,6 @@ const categorySchema = mongoose.Schema(
     image: {
       type: String,
       required: false,
-      trim: true,
     },
     slug: {
       type: String,

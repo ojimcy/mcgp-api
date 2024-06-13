@@ -3,12 +3,13 @@ const validate = require('../../middlewares/validate');
 const categoryValidation = require('../../validations/category.validation');
 const categoryController = require('../../controllers/category.controller');
 const auth = require('../../middlewares/auth');
+const multer = require('../../config/multer');
 
 const router = express.Router();
 
 router
   .route('/')
-  .post(auth('manageCategories'), validate(categoryValidation.createCategory), categoryController.createCategory)
+  .post(auth('manageCategories'), multer.fields([{ name: 'image', maxCount: 1 }]), categoryController.createCategory)
   .get(auth('viewCategories'), validate(categoryValidation.getCategories), categoryController.getCategories);
 
 router

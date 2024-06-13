@@ -4,7 +4,10 @@ const { categoryService } = require('../services');
 const ApiError = require('../utils/ApiError');
 
 const createCategory = catchAsync(async (req, res) => {
-  const category = await categoryService.createCategory(req.body);
+  const files = {
+    image: req.files.image,
+  };
+  const category = await categoryService.createCategory(req.body, files);
   res.status(httpStatus.CREATED).json(category);
 });
 

@@ -1,16 +1,33 @@
 const httpStatus = require('http-status');
 const { Category } = require('../models');
 const ApiError = require('../utils/ApiError');
+const { uploadImage } = require('./imageUpload.service');
 
 /**
  * Create a category
  * @param {Object} categoryBody
+ * @param {Object} files
  * @returns {Promise<Category>}
  */
-const createCategory = async (categoryBody) => {
+const createCategory = async (categoryBody, files) => {
   const categoryModel = await Category();
+  // Check if category with the same title already exists
+  const existingCategory = await categoryModel.findOne({ title: categoryBody.title });
+  if (existingCategory) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Category with this title already exists');
+  }
 
-  const category = await categoryModel.create(categoryBody);
+  let imageUrl = null;
+  if (files && files.image && files.image.length > 0) {
+    imageUrl = await uploadImage(files.image[0].path);
+  }
+
+  const categoryData = {
+    ...categoryBody,
+    image: imageUrl,
+  };
+
+  const category = await categoryModel.create(categoryData);
   return category;
 };
 

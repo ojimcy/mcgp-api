@@ -15,7 +15,7 @@ const createAd = catchAsync(async (req, res) => {
 });
 
 const getAds = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['title', 'status', 'category', 'createdBy']);
+  const filter = pick(req.query, ['title', 'status', 'category', 'createdBy', 'type']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const ads = await adService.queryAds(filter, options);
   res.status(httpStatus.OK).json(ads);
