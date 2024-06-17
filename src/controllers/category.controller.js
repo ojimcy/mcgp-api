@@ -15,7 +15,7 @@ const getCategories = catchAsync(async (req, res) => {
   const filter = req.query;
   const options = req.query;
   const categories = await categoryService.queryCategories(filter, options);
-  res.json(categories);
+  res.status(httpStatus.OK).json(categories);
 });
 
 const getCategory = catchAsync(async (req, res) => {
@@ -23,7 +23,7 @@ const getCategory = catchAsync(async (req, res) => {
   if (!category) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Category not found');
   }
-  res.json(category);
+  res.status(httpStatus.OK).json(category);
 });
 
 const updateCategory = catchAsync(async (req, res) => {
@@ -36,10 +36,16 @@ const deleteCategory = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const getSubCategories = catchAsync(async (req, res) => {
+  const subCategories = await categoryService.getSubCategories(req.query.parentCategoryId);
+  res.status(httpStatus.OK).json(subCategories);
+});
+
 module.exports = {
   createCategory,
   getCategories,
   getCategory,
   updateCategory,
   deleteCategory,
+  getSubCategories,
 };

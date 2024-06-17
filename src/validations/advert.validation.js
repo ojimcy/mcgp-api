@@ -39,6 +39,7 @@ const getAds = {
   query: Joi.object().keys({
     title: Joi.string(),
     status: Joi.string(),
+    type: Joi.string(),
     category: Joi.string().custom(objectId),
     createdBy: Joi.string().custom(objectId),
     sortBy: Joi.string(),

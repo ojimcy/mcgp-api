@@ -1,29 +1,48 @@
-// cart.validation.js
 const Joi = require('joi');
 const { objectId } = require('./custom.validation');
 
-const addToCart = {
-  body: Joi.object().keys({
-    productId: Joi.string().custom(objectId).required(),
-    quantity: Joi.number().integer().min(1).required(),
+const getCategories = {
+  query: Joi.object().keys({
+    title: Joi.string(),
+    slug: Joi.string(),
+    type: Joi.string(),
+    parentCategory: Joi.string().custom(objectId),
+    isFeatured: Joi.bool(),
+    sortBy: Joi.string(),
+    limit: Joi.number().integer(),
+    page: Joi.number().integer(),
   }),
 };
 
-const updateCart = {
-  body: Joi.object().keys({
-    productId: Joi.string().custom(objectId).required(),
-    quantity: Joi.number().integer().min(1).required(),
-  }),
-};
-
-const removeItemFromCart = {
+const getCategory = {
   params: Joi.object().keys({
-    productId: Joi.string().custom(objectId).required(),
+    categoryId: Joi.string().custom(objectId),
+  }),
+};
+
+const updateCategory = {
+  params: Joi.object().keys({
+    categoryId: Joi.string().custom(objectId).required(),
+  }),
+  body: Joi.object().min(1),
+};
+
+const deleteCategory = {
+  params: Joi.object().keys({
+    categoryId: Joi.string().custom(objectId),
+  }),
+};
+
+const getSubCategories = {
+  query: Joi.object().keys({
+    parentCategoryId: Joi.string().custom(objectId).required(),
   }),
 };
 
 module.exports = {
-  addToCart,
-  updateCart,
-  removeItemFromCart,
+  getCategories,
+  getCategory,
+  updateCategory,
+  deleteCategory,
+  getSubCategories,
 };

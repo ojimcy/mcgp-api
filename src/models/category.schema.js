@@ -16,6 +16,7 @@ const categorySchema = mongoose.Schema(
     type: {
       type: String,
       required: true,
+      enum: ['Product', 'Service'],
     },
     parentCategory: {
       type: mongoose.Schema.Types.ObjectId,
@@ -25,6 +26,10 @@ const categorySchema = mongoose.Schema(
     image: {
       type: String,
       required: false,
+    },
+    isFeatured: {
+      type: Boolean,
+      default: false,
     },
     slug: {
       type: String,

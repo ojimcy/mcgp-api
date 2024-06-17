@@ -26,7 +26,6 @@ const createCategory = async (categoryBody, files) => {
     ...categoryBody,
     image: imageUrl,
   };
-
   const category = await categoryModel.create(categoryData);
   return category;
 };
@@ -85,10 +84,21 @@ const deleteCategoryById = async (categoryId) => {
   return category;
 };
 
+/**
+ * Get sub-categories by parent category id
+ * @param {ObjectId} parentCategoryId
+ * @returns {Promise<QueryResult>}
+ */
+const getSubCategories = async (parentCategoryId) => {
+  const subCategories = await Category.find({ parentCategory: parentCategoryId });
+  return subCategories;
+};
+
 module.exports = {
   createCategory,
   queryCategories,
   getCategoryById,
   updateCategoryById,
   deleteCategoryById,
+  getSubCategories,
 };

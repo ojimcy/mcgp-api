@@ -15,7 +15,7 @@ const createAd = async (adBody, createdBy, files) => {
   const user = await getUserById(createdBy);
 
   if (!user.isKycVerified) {
-    throw new ApiError(httpStatus.FORBIDDEN, 'Please complete KYC verification');
+    throw new ApiError(httpStatus.FORBIDDEN, 'Please complete KYC verification!');
   }
   const featuredImageUrl = files.featuredImage ? await uploadImage(files.featuredImage[0].path) : null;
   const imageUrls = await uploadImages(files.images);
@@ -26,8 +26,8 @@ const createAd = async (adBody, createdBy, files) => {
     createdBy,
   };
 
-  const ad = await AdvertModel.create(adData);
-  return ad;
+  const advert = await AdvertModel.create(adData);
+  return advert;
 };
 
 /**
@@ -38,8 +38,8 @@ const createAd = async (adBody, createdBy, files) => {
  */
 const queryAds = async (filter, options) => {
   const AdvertModel = await Advert();
-  const ads = await AdvertModel.paginate(filter, options);
-  return ads;
+  const adverts = await AdvertModel.paginate(filter, options);
+  return adverts;
 };
 
 /**
