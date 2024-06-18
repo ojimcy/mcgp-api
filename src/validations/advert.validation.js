@@ -75,6 +75,16 @@ const rejectAd = {
   }),
 };
 
+const addReview = {
+  params: Joi.object().keys({
+    advertId: Joi.string().custom(objectId).required(),
+  }),
+  body: Joi.object().keys({
+    rating: Joi.number().min(1).max(5).required(),
+    reviewText: Joi.string().optional(),
+  }),
+};
+
 module.exports = {
   createAd,
   updateAd,
@@ -83,4 +93,5 @@ module.exports = {
   deleteAd,
   approveAd,
   rejectAd,
+  addReview,
 };

@@ -17,6 +17,7 @@ const userPermissions = [
   'createAdvert',
   'viewAdverts',
   'order',
+  'addReview',
 ];
 
 const adminPermissions = [

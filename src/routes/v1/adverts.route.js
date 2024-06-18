@@ -41,4 +41,6 @@ router
   )
   .delete(auth('viewAdverts'), validate(advertValidation.deleteAd), advertController.deleteAd);
 
+router.route('/:advertId/review').post(auth('addReview'), validate(advertValidation.addReview), advertController.addReview);
+
 module.exports = router;

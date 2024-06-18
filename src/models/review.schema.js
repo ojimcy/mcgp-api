@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const { toJSON } = require('./plugins');
 
-// create opt model with userId, otp, and expiry
-
 const reviewSchema = new mongoose.Schema(
   {
     userId: {

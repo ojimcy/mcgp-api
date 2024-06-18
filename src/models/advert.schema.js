@@ -93,10 +93,11 @@ const advertSchema = mongoose.Schema(
       ref: 'User',
     },
     reviews: [reviewSchema],
-    ratings: {
+    averageRating: {
       type: Number,
       min: 0,
       max: 5,
+      default: 0,
     },
     attributes: [
       {
@@ -130,5 +131,14 @@ const advertSchema = mongoose.Schema(
 // Add plugin that converts mongoose documents to JSON
 advertSchema.plugin(toJSON);
 advertSchema.plugin(paginate);
+
+// Full-text index on name and description for search
+advertSchema.index({ name: 'text', description: 'text' });
+
+// Other indexes
+advertSchema.index({ price: 1 });
+advertSchema.index({ category: 1 });
+advertSchema.index({ createdBy: 1 });
+advertSchema.index({ status: 1 });
 
 module.exports = advertSchema;

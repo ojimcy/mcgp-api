@@ -47,13 +47,22 @@ const deleteAd = catchAsync(async (req, res) => {
 const approveAd = catchAsync(async (req, res) => {
   const userId = req.user._id;
   const ad = await adService.approveAd(req.params.advertId, userId);
-  res.json(ad);
+  res.status(httpStatus.OK).json(ad);
 });
 
 const rejectAd = catchAsync(async (req, res) => {
   const userId = req.user._id;
   const ad = await adService.rejectAd(req.params.advertId, req.body.rejectionReasons, userId);
   res.json(ad);
+});
+
+const addReview = catchAsync(async (req, res) => {
+  const { advertId } = req.params;
+  const { rating, reviewText } = req.body;
+  const userId = req.user._id;
+
+  const ad = await adService.addReview(advertId, userId, rating, reviewText);
+  res.status(httpStatus.OK).json(ad);
 });
 
 module.exports = {
@@ -64,4 +73,5 @@ module.exports = {
   deleteAd,
   approveAd,
   rejectAd,
+  addReview,
 };

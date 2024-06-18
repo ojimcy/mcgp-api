@@ -140,6 +140,42 @@ const rejectAd = async (advertId, rejectionReasons, rejectedByUserId) => {
   return ad;
 };
 
+/**
+ * Add or update review for an ad
+ * @param {ObjectId} advertId
+ * @param {ObjectId} userId
+ * @param {Number} rating
+ * @param {String} reviewText
+ * @returns {Promise<Advert>}
+ */
+const addReview = async (advertId, userId, rating, reviewText) => {
+  const ad = await getAdById(advertId);
+  if (!ad) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Advert not found');
+  }
+
+  // Check if the user has already reviewed the ad
+  const existingReview = ad.reviews.find((r) => r.userId.toString() === userId.toString());
+
+  if (existingReview) {
+    // Update existing review
+    existingReview.rating = rating;
+    existingReview.reviewText = reviewText;
+    existingReview.date = Date.now();
+  } else {
+    // Add new review
+    ad.reviews.push({ userId, rating, reviewText });
+  }
+
+  // Calculate the new average rating
+  const totalRatings = ad.reviews.length;
+  const sumRatings = ad.reviews.reduce((acc, curr) => acc + curr.rating, 0);
+  ad.averageRating = sumRatings / totalRatings;
+
+  await ad.save();
+  return ad;
+};
+
 module.exports = {
   createAd,
   queryAds,
@@ -148,4 +184,5 @@ module.exports = {
   deleteAdById,
   approveAd,
   rejectAd,
+  addReview,
 };
