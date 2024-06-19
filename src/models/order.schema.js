@@ -40,6 +40,14 @@ const orderSchema = new mongoose.Schema(
       required: true,
       enum: ['bank_transfer', 'crypto'],
     },
+    paymentDetails: {
+      accountNumber: String,
+      accountName: String,
+      bankName: String,
+      walletAddress: String,
+      symbol: String,
+      network: String,
+    },
     paymentStatus: {
       type: String,
       enum: ['Pending', 'Completed', 'Failed'],

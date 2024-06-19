@@ -12,3 +12,4 @@ module.exports.cartService = require('./cart.service');
 module.exports.orderService = require('./order.service');
 module.exports.adService = require('./advert.service');
 module.exports.paymentService = require('./payment.service');
+module.exports.paymentAccountService = require('./paymentAccount.service');

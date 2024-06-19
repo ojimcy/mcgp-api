@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
 const httpStatus = require('http-status');
-const { Order } = require('../models');
+const { Order, PaymentAccount } = require('../models');
 const ApiError = require('../utils/ApiError');
-// const SYSTEM_CONFIG = require('../constants/systemConfig');
+const SYSTEM_CONFIG = require('../constants/systemConfig');
 const { getCartItems, clearCart } = require('./cart.service');
 const { getAdById } = require('./advert.service');
 
@@ -15,11 +15,31 @@ const createOrder = async (orderBody, buyerId) => {
   const { deliveryAddress, paymentMethod } = orderBody;
 
   const OrderModel = await Order();
+  const paymentAccountModel = await PaymentAccount();
   const cartItems = await getCartItems(buyerId);
 
   if (cartItems.length === 0) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Cart is empty');
   }
+
+  const accountDetails = await paymentAccountModel.findOne();
+  if (!accountDetails) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Account details not found');
+  }
+
+  const paymentDetails =
+    paymentMethod === 'bank_transfer'
+      ? {
+          accountNumber: accountDetails.bank_transfer.accountNumber,
+          accountName: accountDetails.bank_transfer.accountName,
+          bankName: accountDetails.bank_transfer.bankName,
+        }
+      : {
+          walletAddress: accountDetails.crypto.walletAddress,
+          symbol: accountDetails.crypto.symbol,
+          network: accountDetails.crypto.network,
+        };
+
   const orderItems = await Promise.all(
     cartItems.map(async (item) => {
       const advert = await getAdById(item.productId);
@@ -42,6 +62,7 @@ const createOrder = async (orderBody, buyerId) => {
     amount: totalAmount,
     deliveryAddress,
     paymentMethod,
+    paymentDetails,
   };
 
   const order = await OrderModel.create(orderData);
@@ -49,6 +70,31 @@ const createOrder = async (orderBody, buyerId) => {
   // Clear the cart after creating the order
   await clearCart(buyerId);
 
+  return order;
+};
+
+/**
+ * Create an order
+ * @param {Object} orderBody
+ * @param {ObjectId} buyerId
+ * @returns {Promise<Order>}
+ */
+const requestService = async (orderBody, buyerId) => {
+  const OrderModel = await Order();
+  const advert = await getAdById(orderBody.productId);
+  if (!advert) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Service not found');
+  }
+
+  const orderData = {
+    ...orderBody,
+    buyer: buyerId,
+    seller: advert.createdBy,
+    amount: advert.price,
+    serviceFee: SYSTEM_CONFIG.SYSTEM_FEE,
+  };
+
+  const order = await OrderModel.create(orderData);
   return order;
 };
 
@@ -143,6 +189,7 @@ const completeOrder = async (orderId) => {
 
 module.exports = {
   createOrder,
+  requestService,
   getOrderById,
   queryOrders,
   getOrdersByUser,

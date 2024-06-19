@@ -12,6 +12,7 @@ const cartSchema = require('./cart.schema');
 const orderSchema = require('./order.schema');
 const advertSchema = require('./advert.schema');
 const paymentSchema = require('./payment.schema');
+const paymentMethodSchema = require('./paymentAccount.schema');
 
 let conn = null;
 
@@ -50,6 +51,7 @@ const getConnection = async () => {
     conn.model('Order', orderSchema);
     conn.model('Advert', advertSchema);
     conn.model('Payment', paymentSchema);
+    conn.model('PaymentMethod', paymentMethodSchema);
   }
 
   return conn;

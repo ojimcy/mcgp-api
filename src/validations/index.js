@@ -7,3 +7,4 @@ module.exports.brandValidation = require('./brand.validation');
 module.exports.collectionValidation = require('./collection.validation');
 module.exports.cartValidation = require('./cart.validation');
 module.exports.adValidation = require('./advert.validation');
+module.exports.paymentMethodValidation = require('./paymentAccount.validation');

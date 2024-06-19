@@ -10,3 +10,4 @@ module.exports.Cart = require('./cart.model');
 module.exports.Order = require('./order.model');
 module.exports.Advert = require('./advert.model');
 module.exports.Payment = require('./payment.model');
+module.exports.PaymentAccount = require('./paymentAccount.model');

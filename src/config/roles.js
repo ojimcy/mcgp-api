@@ -18,6 +18,7 @@ const userPermissions = [
   'viewAdverts',
   'order',
   'addReview',
+  'getPaymentAccounts',
 ];
 
 const adminPermissions = [
@@ -36,6 +37,7 @@ const adminPermissions = [
   'viewAllOrders',
   'manageAdverts',
   'manageOrder',
+  'managePaymentAccounts',
 ];
 
 const allRoles = {
