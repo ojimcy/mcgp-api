@@ -16,4 +16,11 @@ router
   .route('/:productId')
   .post(auth('manageCart'), validate(cartValidation.removeItemFromCart), cartController.removeItemFromCart);
 
+router
+  .route('/:productId/increase')
+  .post(auth('manageCart'), validate(cartValidation.increaseQuantity), cartController.increaseQuantity);
+router
+  .route('/:productId/decrease')
+  .post(auth('manageCart'), validate(cartValidation.decreaseQuantity), cartController.decreaseQuantity);
+
 module.exports = router;

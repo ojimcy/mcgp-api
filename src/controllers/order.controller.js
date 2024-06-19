@@ -21,6 +21,13 @@ const getOrders = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).json(ads);
 });
 
+const getMyOrders = catchAsync(async (req, res) => {
+  const userId = req.user._id;
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const orders = await orderService.getOrdersByUser(userId, options);
+  res.status(httpStatus.OK).json(orders);
+});
+
 const payForOrder = catchAsync(async (req, res) => {
   const payment = await paymentService.payForOrder(req.params.orderId, req.body, req.files);
   res.status(httpStatus.OK).json(payment);
@@ -45,6 +52,7 @@ module.exports = {
   createOrder,
   getOrder,
   getOrders,
+  getMyOrders,
   payForOrder,
   acknowledgePayment,
   releaseProduct,

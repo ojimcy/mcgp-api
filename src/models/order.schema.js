@@ -3,25 +3,33 @@ const { toJSON, paginate } = require('./plugins');
 
 const orderSchema = new mongoose.Schema(
   {
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Advert',
-      required: true,
-    },
+    product: [
+      {
+        advert: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Advert',
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+          min: 1,
+        },
+        price: {
+          type: Number,
+          required: true,
+        },
+        seller: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
+      },
+    ],
     buyer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-    },
-    seller: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    status: {
-      type: String,
-      enum: ['Pending', 'Paid', 'Released', 'Completed'],
-      default: 'Pending',
     },
     paymentProof: {
       type: String,
@@ -63,6 +71,10 @@ const orderSchema = new mongoose.Schema(
         required: true,
       },
       state: {
+        type: String,
+        required: true,
+      },
+      country: {
         type: String,
         required: true,
       },

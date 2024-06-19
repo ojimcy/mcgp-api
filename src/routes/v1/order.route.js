@@ -14,6 +14,8 @@ router
 
 router.route('/get-all').get(auth('order'), validate(orderValidation.getOrders), orderController.getOrders);
 
+router.route('/my-orders').get(auth(), orderController.getMyOrders);
+
 router.route('/:orderId').get(auth('order'), validate(orderValidation.getOrder), orderController.getOrder);
 
 router

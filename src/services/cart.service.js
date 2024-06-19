@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const { Cart } = require('../models');
-const { getProduct } = require('./advert.service');
+const { getAdById } = require('./advert.service');
 
 // Helper function for parameter validation
 const validateCartParams = (userId, productId, quantity) => {
@@ -34,13 +34,17 @@ const addToCart = async (userId, productId, quantity) => {
     return existingCartItem;
   }
 
-  const product = await getProduct(productId);
+  const product = await getAdById(productId);
+  if (!product) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
+  }
+
   // If the product doesn't exist, create a new cart item
   const newCartItem = new CartModel({
     userId,
     productId,
     quantity,
-    title: product.title,
+    name: product.name,
     price: product.price,
     image: product.images[0],
   });
