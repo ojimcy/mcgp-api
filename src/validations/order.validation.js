@@ -3,7 +3,7 @@ const { objectId } = require('./custom.validation');
 
 const createOrder = {
   body: Joi.object().keys({
-    paymentMethod: Joi.string().valid('bank_transfer', 'crypto').required(),
+    paymentMethod: Joi.string().valid('fiat', 'crypto').required(),
     deliveryAddress: Joi.object()
       .keys({
         fullName: Joi.string().required(),

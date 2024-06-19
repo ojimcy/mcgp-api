@@ -3,16 +3,13 @@ const { objectId } = require('./custom.validation');
 
 const createPaymentAccount = {
   body: Joi.object().keys({
-    bank_transfer: Joi.object({
-      accountNumber: Joi.string(),
-      accountName: Joi.string(),
-      bankName: Joi.string(),
-    }),
-    crypto: Joi.object({
-      walletAddress: Joi.string(),
-      symbol: Joi.string(),
-      network: Joi.string(),
-    }),
+    type: Joi.string().required(),
+    accountNumber: Joi.string(),
+    accountName: Joi.string(),
+    bankName: Joi.string(),
+    walletAddress: Joi.string(),
+    symbol: Joi.string(),
+    network: Joi.string(),
   }),
 };
 
@@ -36,16 +33,13 @@ const updatePaymentAccount = {
   }),
   body: Joi.object()
     .keys({
-      bank_transfer: Joi.object({
-        accountNumber: Joi.string(),
-        accountName: Joi.string(),
-        bankName: Joi.string(),
-      }),
-      crypto: Joi.object({
-        walletAddress: Joi.string(),
-        symbol: Joi.string(),
-        network: Joi.string(),
-      }),
+      type: Joi.string(),
+      accountNumber: Joi.string(),
+      accountName: Joi.string(),
+      bankName: Joi.string(),
+      walletAddress: Joi.string(),
+      symbol: Joi.string(),
+      network: Joi.string(),
     })
     .min(1),
 };

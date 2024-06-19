@@ -29,7 +29,7 @@ const getMyOrders = catchAsync(async (req, res) => {
 });
 
 const payForOrder = catchAsync(async (req, res) => {
-  const payment = await paymentService.payForOrder(req.params.orderId, req.body, req.files);
+  const payment = await paymentService.payForOrder(req.params.orderId, req.files);
   res.status(httpStatus.OK).json(payment);
 });
 

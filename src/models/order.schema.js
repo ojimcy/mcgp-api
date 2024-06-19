@@ -38,7 +38,7 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
       required: true,
-      enum: ['bank_transfer', 'crypto'],
+      enum: ['fiat', 'crypto'],
     },
     paymentDetails: {
       accountNumber: String,

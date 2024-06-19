@@ -1,29 +1,30 @@
 const mongoose = require('mongoose');
 const { toJSON } = require('./plugins');
 
-const paymentMethodSchema = mongoose.Schema(
+const paymentAccountSchema = mongoose.Schema(
   {
-    bank_transfer: {
-      accountNumber: {
-        type: String,
-      },
-      accountName: {
-        type: String,
-      },
-      bankName: {
-        type: String,
-      },
+    type: {
+      type: String,
+      enum: ['fiat', 'crypto'],
+      required: true,
     },
-    crypto: {
-      walletAddress: {
-        type: String,
-      },
-      symbol: {
-        type: String,
-      },
-      network: {
-        type: String,
-      },
+    accountNumber: {
+      type: String,
+    },
+    accountName: {
+      type: String,
+    },
+    bankName: {
+      type: String,
+    },
+    walletAddress: {
+      type: String,
+    },
+    symbol: {
+      type: String,
+    },
+    network: {
+      type: String,
     },
   },
   {
@@ -32,6 +33,6 @@ const paymentMethodSchema = mongoose.Schema(
 );
 
 // add plugin that converts mongoose to json
-paymentMethodSchema.plugin(toJSON);
+paymentAccountSchema.plugin(toJSON);
 
-module.exports = paymentMethodSchema;
+module.exports = paymentAccountSchema;

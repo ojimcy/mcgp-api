@@ -8,14 +8,6 @@ const paymentSchema = mongoose.Schema(
       ref: 'Order',
       required: true,
     },
-    amount: {
-      type: Number,
-      required: true,
-    },
-    method: {
-      type: String,
-      required: true,
-    },
     status: {
       type: String,
       enum: ['Pending', 'Recieved', 'Failed'],
@@ -24,24 +16,6 @@ const paymentSchema = mongoose.Schema(
     proof: {
       type: String,
       required: false,
-    },
-    accountDetails: {
-      accountName: {
-        type: String,
-        required: false,
-      },
-      accountNumber: {
-        type: String,
-        required: false,
-      },
-      bankName: {
-        type: String,
-        required: false,
-      },
-      walletAddress: {
-        type: String,
-        required: false,
-      },
     },
   },
   {

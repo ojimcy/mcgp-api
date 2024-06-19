@@ -1,18 +1,18 @@
 const { getConnection } = require('./connection');
-const paymentMethodSchema = require('./paymentAccount.schema');
+const paymentAccountSchema = require('./paymentAccount.schema');
 
 let model = null;
 
 /**
- * @returns PaymentMethod
+ * @returns PaymentAccount
  */
-const PaymentMethod = async () => {
+const PaymentAccount = async () => {
   if (!model) {
     const conn = await getConnection();
-    model = conn.model('PaymentMethod', paymentMethodSchema);
+    model = conn.model('PaymentAccount', paymentAccountSchema);
   }
 
   return model;
 };
 
-module.exports = PaymentMethod;
+module.exports = PaymentAccount;

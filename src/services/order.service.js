@@ -22,22 +22,22 @@ const createOrder = async (orderBody, buyerId) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Cart is empty');
   }
 
-  const accountDetails = await paymentAccountModel.findOne();
+  const accountDetails = await paymentAccountModel.findOne({ type: paymentMethod });
   if (!accountDetails) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Account details not found');
   }
 
   const paymentDetails =
-    paymentMethod === 'bank_transfer'
+    paymentMethod === 'fiat'
       ? {
-          accountNumber: accountDetails.bank_transfer.accountNumber,
-          accountName: accountDetails.bank_transfer.accountName,
-          bankName: accountDetails.bank_transfer.bankName,
+          accountNumber: accountDetails.accountNumber,
+          accountName: accountDetails.accountName,
+          bankName: accountDetails.bankName,
         }
       : {
-          walletAddress: accountDetails.crypto.walletAddress,
-          symbol: accountDetails.crypto.symbol,
-          network: accountDetails.crypto.network,
+          walletAddress: accountDetails.walletAddress,
+          symbol: accountDetails.symbol,
+          network: accountDetails.network,
         };
 
   const orderItems = await Promise.all(
