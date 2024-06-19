@@ -12,7 +12,7 @@ router
   .post(auth('order'), validate(orderValidation.createOrder), orderController.createOrder)
   .get(auth('order'), validate(orderValidation.getOrders), orderController.getOrders);
 
-router.route('/get-all').get(auth('order'), validate(orderValidation.getOrders), orderController.getOrders);
+router.route('/get-all').get(auth('manageOrder'), validate(orderValidation.getOrders), orderController.getOrders);
 
 router.route('/my-orders').get(auth(), orderController.getMyOrders);
 

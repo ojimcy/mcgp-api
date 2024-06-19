@@ -21,7 +21,7 @@ const payForOrder = async (orderId, paymentBody, files) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid payment method');
   }
 
-  const proofUrl = files.proof ? await uploadImage(files.proof[0].path) : null;
+  const proofUrl = await uploadImage(files.proof[0].path);
 
   order.paymentProof = proofUrl;
   order.paymentMethod = paymentBody.method;
