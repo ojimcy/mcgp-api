@@ -6,13 +6,18 @@ const reviewSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
+      required: true,
     },
     rating: {
       type: Number,
       min: 1,
       max: 5,
+      required: true,
     },
-    reviewText: String,
+    reviewText: {
+      type: String,
+      required: true,
+    },
     date: {
       type: Date,
       default: Date.now,
@@ -20,7 +25,8 @@ const reviewSchema = new mongoose.Schema(
   },
   { _id: false }
 );
-// add plugin that converts mongoose to json
+
+// Add plugin that converts mongoose to JSON
 reviewSchema.plugin(toJSON);
 
 module.exports = reviewSchema;

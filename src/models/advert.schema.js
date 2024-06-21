@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const { toJSON, paginate } = require('./plugins');
-const reviewSchema = require('./review.schema');
 
 const advertSchema = mongoose.Schema(
   {
@@ -92,7 +91,30 @@ const advertSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
-    reviews: [reviewSchema],
+    reviews: [
+      {
+        reviewedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
+        rating: {
+          type: Number,
+          min: 1,
+          max: 5,
+          required: true,
+        },
+        reviewText: {
+          type: String,
+          required: true,
+        },
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+      { _id: false },
+    ],
     averageRating: {
       type: Number,
       min: 0,

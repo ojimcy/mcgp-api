@@ -155,7 +155,7 @@ const addReview = async (advertId, userId, rating, reviewText) => {
   }
 
   // Check if the user has already reviewed the ad
-  const existingReview = ad.reviews.find((r) => r.userId.toString() === userId.toString());
+  const existingReview = ad.reviews.find((r) => r.reviewedBy && r.reviewedBy.toString() === userId.toString());
 
   if (existingReview) {
     // Update existing review
@@ -164,7 +164,7 @@ const addReview = async (advertId, userId, rating, reviewText) => {
     existingReview.date = Date.now();
   } else {
     // Add new review
-    ad.reviews.push({ userId, rating, reviewText });
+    ad.reviews.push({ reviewedBy: userId, rating, reviewText });
   }
 
   // Calculate the new average rating
