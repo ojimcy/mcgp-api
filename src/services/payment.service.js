@@ -11,7 +11,10 @@ const payForOrder = async (orderId, files) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Order not found');
   }
 
-  const proofUrl = await uploadImage(files.proof[0].path);
+  let proofUrl = null;
+  if (files && files.proof && files.proof.length > 0) {
+    proofUrl = await uploadImage(files.proof[0].path);
+  }
 
   order.paymentProof = proofUrl;
   order.isPaid = true;

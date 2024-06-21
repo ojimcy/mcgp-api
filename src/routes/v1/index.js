@@ -13,6 +13,7 @@ const cartRoute = require('./cart.route');
 const orderRoute = require('./order.route');
 const advertsRoute = require('./adverts.route');
 const paymentAccountRoute = require('./paymentAccount.route');
+const wishListRoute = require('./wishList.route');
 
 const router = express.Router();
 
@@ -64,6 +65,10 @@ const defaultRoutes = [
   {
     path: '/payment-methods',
     route: paymentAccountRoute,
+  },
+  {
+    path: '/wishlist',
+    route: wishListRoute,
   },
 ];
 
