@@ -31,6 +31,10 @@ const categorySchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isParent: {
+      type: Boolean,
+      default: false,
+    },
     slug: {
       type: String,
       required: false,

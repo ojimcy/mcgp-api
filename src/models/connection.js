@@ -14,6 +14,8 @@ const advertSchema = require('./advert.schema');
 const paymentSchema = require('./payment.schema');
 const paymentMethodSchema = require('./paymentAccount.schema');
 const wishlistSchema = require('./wishList.schema');
+const transactionSchema = require('./transaction.schema');
+const accountSchema = require('./account.schema');
 
 let conn = null;
 
@@ -54,6 +56,8 @@ const getConnection = async () => {
     conn.model('Payment', paymentSchema);
     conn.model('PaymentMethod', paymentMethodSchema);
     conn.model('WishList', wishlistSchema);
+    conn.model('Transaction', transactionSchema);
+    conn.model('Account', accountSchema);
   }
 
   return conn;

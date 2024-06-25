@@ -4,6 +4,8 @@ const { categoryService } = require('../services');
 const ApiError = require('../utils/ApiError');
 
 const createCategory = catchAsync(async (req, res) => {
+  console.log('files', req.files);
+  console.log('body', req.body);
   const files = {
     image: req.files.image,
   };

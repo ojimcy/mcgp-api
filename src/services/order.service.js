@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
+const mongoose = require('mongoose');
 const httpStatus = require('http-status');
-const { Order, PaymentAccount } = require('../models');
+const { Order, PaymentAccount, Transaction, Account } = require('../models');
 const ApiError = require('../utils/ApiError');
 const SYSTEM_CONFIG = require('../constants/systemConfig');
 const { getCartItems, clearCart } = require('./cart.service');
@@ -51,6 +52,7 @@ const createOrder = async (orderBody, buyerId) => {
         quantity: item.quantity,
         price: advert.price * item.quantity,
         seller: advert.createdBy,
+        image: item.image,
       };
     })
   );
@@ -134,20 +136,79 @@ const getOrdersByUser = async (userId, options) => {
 };
 
 /**
- * Acknowledge payment
- * @param {ObjectId} orderId
- * @param {boolean} isPaymentReceived
- * @returns {Promise<Order>}
+ * Acknowledge payment for an order containing products from multiple sellers
+ * @param {ObjectId} orderId - The ID of the order
+ * @param {boolean} isPaymentReceived - Indicates if the payment was received
+ * @returns {Promise<Order>} The updated order
  */
 const acknowledgePayment = async (orderId, isPaymentReceived) => {
-  const order = await getOrderById(orderId);
-  if (!order) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Order not found');
-  }
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  const TransactionModel = await Transaction();
+  const OrderModel = await Order();
+  const AccountModel = await Account();
 
-  order.paymentStatus = isPaymentReceived ? 'Completed' : 'Failed';
-  await order.save();
-  return order;
+  try {
+    const order = await OrderModel.findById(orderId).session(session);
+    if (!order) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Order not found');
+    }
+    const transactions = [];
+    let sellerIds;
+    if (order.product && order.product.length > 0) {
+      sellerIds = [...new Set(order.product.map((product) => product.seller))];
+    }
+
+    const sellerAccounts = await AccountModel.find({ user: { $in: sellerIds } }).session(session);
+    const sellerAccountMap = new Map(sellerAccounts.map((account) => [account.user.toString(), account]));
+
+    order.products.forEach((product) => {
+      const sellerId = product.seller.toString();
+      const account = sellerAccountMap.get(sellerId);
+      if (!account) {
+        throw new ApiError(httpStatus.NOT_FOUND, `Account not found for seller ${sellerId}`);
+      }
+
+      const transactionData = {
+        user: sellerId,
+        type: 'credit',
+        amount: product.price,
+        description: `Payment for product ${product._id.toString().slice(0, 6)} in order ${order._id
+          .toString()
+          .slice(0, 6)}`,
+        status: 'pending',
+      };
+
+      const transaction = new TransactionModel(transactionData);
+      transactions.push(transaction);
+
+      if (isPaymentReceived) {
+        // Update seller's account balance
+        account.balance += product.price;
+
+        // Update transaction status
+        transaction.status = 'completed';
+      } else {
+        // Update transaction status
+        transaction.status = 'failed';
+      }
+    });
+
+    // Save all transactions and update seller accounts
+    await TransactionModel.insertMany(transactions, { session });
+    await Promise.all(sellerAccounts.map((account) => account.save({ session })));
+
+    order.paymentStatus = isPaymentReceived ? 'Completed' : 'Failed';
+    await order.save({ session });
+
+    await session.commitTransaction();
+    return order;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 };
 
 /**

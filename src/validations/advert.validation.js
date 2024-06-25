@@ -6,7 +6,7 @@ const createAd = {
     title: Joi.string().required(),
     companyName: Joi.string().required(),
     description: Joi.string().required(),
-    price: Joi.number().min(0).required(),
+    price: Joi.number().min(0).optional(),
     salePrice: Joi.number().min(0).required().less(Joi.ref('price')),
     type: Joi.string().valid('Product', 'Service').required(),
     stock: Joi.number().min(0),

@@ -19,6 +19,7 @@ const userPermissions = [
   'order',
   'addReview',
   'getPaymentAccounts',
+  'account',
 ];
 
 const adminPermissions = [

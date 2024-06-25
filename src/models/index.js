@@ -12,3 +12,5 @@ module.exports.Advert = require('./advert.model');
 module.exports.Payment = require('./payment.model');
 module.exports.PaymentAccount = require('./paymentAccount.model');
 module.exports.WishList = require('./wishList.model');
+module.exports.Transaction = require('./transaction.model');
+module.exports.Account = require('./account.model');

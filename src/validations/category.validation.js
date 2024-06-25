@@ -8,6 +8,7 @@ const getCategories = {
     type: Joi.string(),
     parentCategory: Joi.string().custom(objectId),
     isFeatured: Joi.bool(),
+    isParent: Joi.bool(),
     sortBy: Joi.string(),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),

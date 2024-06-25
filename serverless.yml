@@ -9,6 +9,7 @@ provider:
   httpApi:
     cors:
       allowedOrigins:
+        - https://millionairecgp.com/
         - http://localhost:3001 
       allowedMethods:
         - GET

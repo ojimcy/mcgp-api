@@ -8,3 +8,4 @@ module.exports.cartController = require('./cart.controller');
 module.exports.orderController = require('./order.controller');
 module.exports.adController = require('./advert.controller');
 module.exports.paymentAccountController = require('./paymentAccount.controller');
+module.exports.accountController = require('./account.controller');
