@@ -162,7 +162,7 @@ const acknowledgePayment = async (orderId, isPaymentReceived) => {
     const sellerAccounts = await AccountModel.find({ user: { $in: sellerIds } }).session(session);
     const sellerAccountMap = new Map(sellerAccounts.map((account) => [account.user.toString(), account]));
 
-    order.products.forEach((product) => {
+    order.product.forEach((product) => {
       const sellerId = product.seller.toString();
       const account = sellerAccountMap.get(sellerId);
       if (!account) {

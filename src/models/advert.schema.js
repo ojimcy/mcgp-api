@@ -123,18 +123,9 @@ const advertSchema = mongoose.Schema(
     },
     attributes: [
       {
-        name: {
-          type: String,
-          required: true,
-        },
-        values: [
-          {
-            type: String,
-            required: true,
-          },
-        ],
+        name: String,
+        values: [String],
       },
-      { _id: false },
     ],
     isFeatured: {
       type: Boolean,

@@ -40,7 +40,8 @@ const updateAd = catchAsync(async (req, res) => {
 });
 
 const deleteAd = catchAsync(async (req, res) => {
-  await adService.deleteAdById(req.params.advertId);
+  const userId = req.user._id;
+  await adService.deleteAdById(req.params.advertId, userId);
   res.status(httpStatus.NO_CONTENT).send();
 });
 

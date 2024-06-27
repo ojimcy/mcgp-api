@@ -17,12 +17,7 @@ const createAd = {
     rejectedBy: Joi.string().custom(objectId),
     reviews: Joi.array().items(Joi.object()),
     ratings: Joi.number().min(0).max(5),
-    attributes: Joi.array().items(
-      Joi.object().keys({
-        name: Joi.string().required(),
-        values: Joi.array().items(Joi.string().required()),
-      })
-    ),
+    attributes: Joi.array().optional(),
     isFeatured: Joi.boolean(),
     isSbAvailable: Joi.boolean(),
   }),

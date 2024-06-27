@@ -1,6 +1,7 @@
+/* eslint-disable no-await-in-loop */
 const httpStatus = require('http-status');
 const parsePhoneNumber = require('libphonenumber-js');
-const { User } = require('../models');
+const { User, Account } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -28,6 +29,7 @@ const normalizePhoneNumber = (phoneNumber) => {
  */
 const createUser = async (userBody) => {
   const userModel = await User();
+  const AccountModel = await Account();
   // Normalize the provided phone number
   const normalizedPhoneNumber = normalizePhoneNumber(userBody.phoneNumber);
   // Check if the email is already taken
@@ -40,7 +42,13 @@ const createUser = async (userBody) => {
   // Create the user object with normalized phone number
   const referralCode = Math.floor(100000 + Math.random() * 900000);
   const user = { ...userBody, phoneNumber: normalizedPhoneNumber, referralCode };
-  return userModel.create(user);
+  const savedUser = await user.save();
+
+  // Create an account for the new user
+  const account = new AccountModel({ user: savedUser._id });
+  await account.save();
+
+  return savedUser;
 };
 
 /**

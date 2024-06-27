@@ -7,12 +7,15 @@ const auth = require('../../middlewares/auth');
 const router = express.Router();
 
 router.get('/', auth('account'), validate(accountValidation.getAccount), accountController.getAccount);
+router.get('/:userId', auth('account'), accountController.getUserAccount);
+
 router.post(
   '/withdraw',
   auth('account'),
   validate(accountValidation.requestWithdrawal),
   accountController.requestWithdrawal
 );
+
 router.post(
   '/withdraw/complete',
   auth('manageAccount'),

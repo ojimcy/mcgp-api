@@ -16,6 +16,15 @@ const getAccount = catchAsync(async (req, res) => {
 });
 
 /**
+ * Get account details by user ID
+ */
+const getUserAccount = catchAsync(async (req, res) => {
+  const { userId } = req.params;
+  const account = await getAccountByUserId(userId);
+  res.status(httpStatus.OK).send(account);
+});
+
+/**
  * Make a withdrawal request
  */
 const requestWithdrawal = catchAsync(async (req, res) => {
@@ -45,4 +54,5 @@ module.exports = {
   requestWithdrawal,
   completeWithdrawal,
   updateAccount,
+  getUserAccount,
 };

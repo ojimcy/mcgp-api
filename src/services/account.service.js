@@ -9,7 +9,8 @@ const { Account, Transaction } = require('../models');
  * @returns {Promise<Account>}
  */
 const getAccountByUserId = async (userId) => {
-  const account = await Account.findOne({ user: userId });
+  const AccountModel = await Account();
+  const account = await AccountModel.findOne({ user: userId });
   if (!account) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Account not found');
   }

@@ -22,7 +22,7 @@ router
   .route('/:orderId/pay')
   .post(auth('createAdvert'), multer.fields([{ name: 'proof', maxCount: 1 }]), orderController.payForOrder);
 router
-  .route('/:orderId/acknowlege')
+  .route('/:orderId/acknowledge')
   .post(auth('manageOrder'), validate(orderValidation.acknowledgePayment), orderController.acknowledgePayment);
 router
   .route('/:orderId/release')

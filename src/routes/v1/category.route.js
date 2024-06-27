@@ -9,7 +9,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(auth('manageCategories'), multer.fields([{ name: 'image', maxCount: 1 }]), categoryController.createCategory)
+  .post(auth('manageCategories'), multer.array('image'), categoryController.createCategory)
   .get(auth('viewCategories'), validate(categoryValidation.getCategories), categoryController.getCategories);
 
 router

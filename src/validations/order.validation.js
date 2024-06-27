@@ -48,7 +48,7 @@ const acknowledgePayment = {
     orderId: Joi.string().custom(objectId).required(),
   }),
   body: Joi.object().keys({
-    isPaymentRecieved: Joi.boolean().required(),
+    isPaymentReceived: Joi.boolean().required(),
   }),
 };
 
