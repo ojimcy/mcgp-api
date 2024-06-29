@@ -5,7 +5,10 @@ const catchAsync = require('../utils/catchAsync');
 const { userService } = require('../services');
 
 const createUser = catchAsync(async (req, res) => {
-  const user = await userService.createUser(req.body);
+  const files = {
+    profilePicture: req.files && req.files.profilePicture ? req.files.profilePicture : [],
+  };
+  const user = await userService.createUser(req.body, files);
   res.status(httpStatus.CREATED).send(user);
 });
 
@@ -25,7 +28,10 @@ const getUser = catchAsync(async (req, res) => {
 });
 
 const updateUser = catchAsync(async (req, res) => {
-  const user = await userService.updateUserById(req.params.userId, req.body);
+  const files = {
+    profilePicture: req.files && req.files.profilePicture ? req.files.profilePicture : [],
+  };
+  const user = await userService.updateUserById(req.params.userId, req.body, files);
   res.send(user);
 });
 
@@ -36,16 +42,17 @@ const deleteUser = catchAsync(async (req, res) => {
 
 const updateProfile = catchAsync(async (req, res) => {
   const userId = req.user._id;
-  const { email, name, country, phoneNumber } = req.body;
-  const updateData = {
-    email,
-    name,
-    country,
-    phoneNumber,
+  const files = {
+    profilePicture: req.files && req.files.profilePicture ? req.files.profilePicture : [],
   };
 
-  const updatedUser = await userService.updateProfile(userId, updateData);
+  const updateData = {};
+  if (req.body.email) updateData.email = req.body.email;
+  if (req.body.name) updateData.name = req.body.name;
+  if (req.body.country) updateData.country = req.body.country;
+  if (req.body.phoneNumber) updateData.phoneNumber = req.body.phoneNumber;
 
+  const updatedUser = await userService.updateProfile(userId, updateData, files);
   res.send(updatedUser);
 });
 

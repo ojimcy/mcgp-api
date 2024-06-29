@@ -1,8 +1,10 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-await-in-loop */
 const httpStatus = require('http-status');
 const parsePhoneNumber = require('libphonenumber-js');
 const { User, Account } = require('../models');
 const ApiError = require('../utils/ApiError');
+const { uploadImage } = require('./imageUpload.service');
 
 /**
  * Normalize the provided phone number
@@ -25,23 +27,31 @@ const normalizePhoneNumber = (phoneNumber) => {
 /**
  * Create a user
  * @param {Object} userBody
+ * @param {Object} files
  * @returns {Promise<User>}
  */
-const createUser = async (userBody) => {
-  const userModel = await User();
+const createUser = async (userBody, files) => {
+  const UserModel = await User();
   const AccountModel = await Account();
+
   // Normalize the provided phone number
   const normalizedPhoneNumber = normalizePhoneNumber(userBody.phoneNumber);
+
   // Check if the email is already taken
-  if (await userModel.isPhoneNumberTaken(userBody.phoneNumber)) {
+  if (await UserModel.isPhoneNumberTaken(userBody.phoneNumber)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Phone number already taken');
-  } else if (userBody.email && (await userModel.isEmailTaken(userBody.email))) {
+  } else if (userBody.email && (await UserModel.isEmailTaken(userBody.email))) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  }
+
+  if (files && files.profilePicture && files.profilePicture.length > 0) {
+    const photoUrl = await uploadImage(files.profilePicture[0].path);
+    userBody.profilePicture = photoUrl;
   }
 
   // Create the user object with normalized phone number
   const referralCode = Math.floor(100000 + Math.random() * 900000);
-  const user = { ...userBody, phoneNumber: normalizedPhoneNumber, referralCode };
+  const user = new UserModel({ ...userBody, phoneNumber: normalizedPhoneNumber, referralCode });
   const savedUser = await user.save();
 
   // Create an account for the new user
@@ -101,7 +111,7 @@ const getUserByPhoneNumber = async (phoneNumber) => {
  * @param {Object} updateBody
  * @returns {Promise<User>}
  */
-const updateUserById = async (userId, updateBody) => {
+const updateUserById = async (userId, updateBody, files) => {
   const userModel = await User();
   const user = await getUserById(userId);
   if (!user) {
@@ -110,6 +120,11 @@ const updateUserById = async (userId, updateBody) => {
   if (updateBody.email && (await userModel.isEmailTaken(updateBody.email, userId))) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
+  if (files && files.profilePicture && files.profilePicture.length > 0) {
+    const photoUrl = await uploadImage(files.profilePicture[0].path);
+    updateBody.profilePicture = photoUrl;
+  }
+
   Object.assign(user, updateBody);
   await user.save();
   return user;
@@ -135,7 +150,7 @@ const deleteUserById = async (userId) => {
  * @param {Object} updateData - Update data
  * @returns {Promise<User>} Updated user profile
  */
-const updateProfile = async (userId, updateData) => {
+const updateProfile = async (userId, updateData, files) => {
   const userModel = await User();
   const user = await getUserById(userId);
 
@@ -143,24 +158,17 @@ const updateProfile = async (userId, updateData) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
 
-  if (updateData.email) {
-    // Check if the new email is already taken by another user
-    if (await userModel.isEmailTaken(updateData.email, userId)) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
-    }
-    user.email = updateData.email;
+  if (updateData.email && (await userModel.isEmailTaken(updateData.email, userId))) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
-  if (updateData.name) {
-    user.name = updateData.name;
-  }
-  if (updateData.country) {
-    user.country = updateData.country;
-  }
-  if (updateData.phoneNumber) {
-    user.phoneNumber = updateData.phoneNumber;
+  if (files && files.profilePicture && files.profilePicture.length > 0) {
+    const photoUrl = await uploadImage(files.profilePicture[0].path);
+    updateData.profilePicture = photoUrl;
   }
 
+  Object.assign(user, updateData);
   await user.save();
+
   return user;
 };
 

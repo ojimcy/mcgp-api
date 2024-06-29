@@ -9,6 +9,7 @@ const createUser = {
     name: Joi.string().required(),
     country: Joi.string().required(),
     role: Joi.string(),
+    profilePicture: Joi.string(),
   }),
 };
 
@@ -40,6 +41,7 @@ const updateUser = {
       country: Joi.string().optional(),
       role: Joi.string().optional(),
       phoneNumber: Joi.string().optional(),
+      profilePicture: Joi.string().optional(),
     })
     .min(1),
 };

@@ -9,12 +9,10 @@ const userSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
       trim: true,
     },
     country: {
       type: String,
-      required: true,
       trim: true,
     },
     address: {
@@ -65,7 +63,7 @@ const userSchema = mongoose.Schema(
       enum: roles,
       default: 'user',
     },
-    photo: {
+    profilePicture: {
       type: String,
       required: false,
       trim: true,
