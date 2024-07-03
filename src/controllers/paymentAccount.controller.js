@@ -8,9 +8,7 @@ const createPaymentAccount = catchAsync(async (req, res) => {
 });
 
 const getPaymentAccounts = catchAsync(async (req, res) => {
-  const filter = req.query;
-  const options = req.query;
-  const result = await paymentAccountService.queryPaymentAccounts(filter, options);
+  const result = await paymentAccountService.queryPaymentAccounts();
   res.status(httpStatus.OK).json(result);
 });
 

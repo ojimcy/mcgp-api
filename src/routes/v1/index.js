@@ -15,6 +15,7 @@ const advertsRoute = require('./adverts.route');
 const paymentAccountRoute = require('./paymentAccount.route');
 const wishListRoute = require('./wishList.route');
 const accountRoute = require('./account.route');
+const searchRoute = require('./search.route');
 
 const router = express.Router();
 
@@ -74,6 +75,10 @@ const defaultRoutes = [
   {
     path: '/account',
     route: accountRoute,
+  },
+  {
+    path: '/search',
+    route: searchRoute,
   },
 ];
 

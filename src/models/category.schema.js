@@ -65,4 +65,7 @@ categorySchema.pre('save', function (next) {
   next();
 });
 
+// Full-text index on title and description for search
+categorySchema.index({ title: 'text', description: 'text' });
+
 module.exports = categorySchema;

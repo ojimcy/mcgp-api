@@ -15,3 +15,4 @@ module.exports.paymentService = require('./payment.service');
 module.exports.paymentAccountService = require('./paymentAccount.service');
 module.exports.wishListService = require('./wishList.service');
 module.exports.accountService = require('./account.service');
+module.exports.searchService = require('./search.service');

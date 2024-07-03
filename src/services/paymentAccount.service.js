@@ -18,9 +18,9 @@ const createPaymentAccount = async (paymentAccountBody) => {
  * @param {Object} options - Query options
  * @returns {Promise<QueryResult>}
  */
-const queryPaymentAccounts = async (filter, options) => {
-  const paymentAccountModel = await PaymentAccount();
-  return paymentAccountModel.paginate(filter, options);
+const queryPaymentAccounts = async () => {
+  const PaymentAccountModel = await PaymentAccount();
+  return PaymentAccountModel.find();
 };
 
 /**
