@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Wishlist } = require('../models');
+const { WishList } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -9,7 +9,7 @@ const ApiError = require('../utils/ApiError');
  * @returns {Promise<Wishlist>}
  */
 const addToWishlist = async (userId, advertId) => {
-  const wishlistModel = await Wishlist();
+  const wishlistModel = await WishList();
   let wishlist = await wishlistModel.findOne({ user: userId });
 
   if (!wishlist) {
@@ -32,7 +32,7 @@ const addToWishlist = async (userId, advertId) => {
  * @returns {Promise<Wishlist>}
  */
 const removeFromWishlist = async (userId, advertId) => {
-  const wishlistModel = await Wishlist();
+  const wishlistModel = await WishList();
   const wishlist = await wishlistModel.findOne({ user: userId });
 
   if (!wishlist) {
@@ -51,7 +51,7 @@ const removeFromWishlist = async (userId, advertId) => {
  * @returns {Promise<Wishlist>}
  */
 const getWishlist = async (userId) => {
-  const wishlistModel = await Wishlist();
+  const wishlistModel = await WishList();
   const wishlist = await wishlistModel.find({ user: userId }).populate('adverts');
   return wishlist;
 };

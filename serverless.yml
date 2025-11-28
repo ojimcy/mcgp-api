@@ -1,5 +1,5 @@
 service: mcgp-api
-frameworkVersion: '3'
+frameworkVersion: '4'
 
 provider:
   name: aws
@@ -10,7 +10,7 @@ provider:
     cors:
       allowedOrigins:
         - https://millionairecgp.com/
-        - http://localhost:3001 
+        - http://localhost:8085 
         - https://admin-mcgp.netlify.app/
       allowedMethods:
         - GET
